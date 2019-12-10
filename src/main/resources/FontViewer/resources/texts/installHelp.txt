@@ -1,16 +1,10 @@
 Visit one of the following sites to learn how to install fonts for your operating system.
 
-Windows 9x
-	http://www.microsoft.com/typography/TrueTypeInstallWin95.mspx
-
-Windows XP
-	http://www.microsoft.com/typography/TrueTypeInstallXP.mspx
-
-Linux (XFree86)
-	http://tldp.org/HOWTO/Font-HOWTO/xfonts.html
-
-Linux (KDE)
-	http://www.linuxbeginner.org/modules.php?name=News&file=article&sid=55
+Linux (Ubuntu)
+    https://askubuntu.com/questions/3697/how-do-i-install-fonts
 
 Mac OS X
-	http://docs.info.apple.com/article.html?artnum=151832
+	https://support.apple.com/en-us/HT201749
+
+Microsoft Windows
+    https://support.microsoft.com/en-us/help/314960/how-to-install-or-remove-a-font-in-windows
