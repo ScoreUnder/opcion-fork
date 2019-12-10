@@ -90,7 +90,7 @@ public class ListViewPanel extends JPanel {
     public void updateDisplay() {
         // Clear list
         listPanel.removeAll();
-        listPanel.setVisible(false);
+        listPanel.setIgnoreRepaint(true);
 
         int items = view.getNumItems();
         // Set when to stop drawing
@@ -109,7 +109,9 @@ public class ListViewPanel extends JPanel {
             listPanel.add(createFontButton(view.getItem(i)));
         }
 
-        listPanel.setVisible(true);
+        listPanel.setIgnoreRepaint(false);
+        listPanel.revalidate();
+        listPanel.repaint();
     }
 
     private AAToggleButton createFontButton(FontFile font) {
