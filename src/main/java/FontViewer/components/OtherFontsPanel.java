@@ -1,205 +1,123 @@
-/*
-  Opcion Font Viewer
-  Copyright (C) 2004 Paul Chiu. All Rights Reserved.
-
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
-
-/*
- * OtherFontsPanel.java
- *
- * Created on 21 February 2004, 18:30
- */
 package FontViewer.components;
-import FontViewer.windows.*;
 
-import java.io.*;
-import java.awt.*;
+import FontViewer.windows.MainWindow;
+
 import javax.swing.*;
-import java.lang.ref.*;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.util.Arrays;
 
-public class OtherFontsPanel extends javax.swing.JPanel implements ListPanel {
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
+public class OtherFontsPanel extends AbstractListPanel {
     private File currentDirectory;
-    private String[] fnames;
-    private String[] fontnames;
+    private String[] filenames = new String[0];
     private MainWindow mw;
-    
-    /** Creates new form OtherFontsPanel */
+    private JTextField locationTextField;
+    private javax.swing.JList<String> otherFontsList;
+    private JScrollPane otherFontsScrollPane;
+
     public OtherFontsPanel(MainWindow mw) {
         this.mw = mw;
-        
+
         initComponents();
     }
-    
+
     public String[] getItem(int itemNumber) {
-        String[] s = new String[3];
-        
-        // Assign current item to s[]
-        if ((itemNumber >= 0)&&(itemNumber < fnames.length)) {
-            s[0] = fnames[itemNumber];
-            s[1] = currentDirectory.toString();
-            s[2] = itemNumber+"";
+        if (itemNumber >= 0 && itemNumber < filenames.length) {
+            return new String[]{
+                    filenames[itemNumber],
+                    currentDirectory.toString(),
+                    String.valueOf(itemNumber)
+            };
+        } else {
+            return new String[3];
         }
-
-        return s;        
     }
-    
+
     public int getNumItems() {
-        int items = 0;
-        
-        if (fnames != null) {
-            items = fnames.length;
-        }
-        
-        return items;
-    }
-
-    public String[] getCurrentItem() {
-        String[] s = new String[3];
-        int p = otherFontsList.getSelectedIndex();
-        
-        if (p >= 0) {
-            s[0] = fnames[p];
-            s[1] = currentDirectory.toString();
-            s[2] = p+"";
-        }
-        
-        return s;
+        return filenames.length;
     }
 
     public int getCurrentItemNum() {
         return otherFontsList.getSelectedIndex();
     }
-    
-    // This method is too slow, need to read file names manually
-    private void updateFontNames() {
-        Font f = null;
-        WeakReference wrf = null;
-        String fontfile = "";
-        fontnames = new String[fnames.length];
-        
-        for (int i=0; i<fnames.length; i++) {
-            try {
-                fontfile = currentDirectory.toString() + File.separator + fnames[i];
-                System.out.println("FF: " + fontfile);
-                f = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream(fontfile));
-                wrf = new WeakReference(f);
-                fontnames[i] = ((Font)wrf.get()).getName();
-            } catch (IOException ioe) {
-                fontnames[i] = "Cannot load " + fnames[i] + " [IOException]";
-            } catch (FontFormatException ffe) {
-                fontnames[i] = "Cannot load " + fnames[i] + " [FontFormatException]";
-            }
-        }
-    }
-    
+
     private void updateDisplay() {
-        fnames = currentDirectory.list(new FontViewer.filters.FontFileFilter());
-        FontViewer.util.QuickSort.sort(fnames, true);
-        // updateFontNames(); Too slow
-        // java.util.Arrays.sort(fnames); Java Arrays sort is case senstive, not that desirable
-        
-        if (fnames.length == 0) {
+        filenames = currentDirectory.list((dir, name) -> name.toUpperCase().endsWith(".TTF"));
+        assert filenames != null;
+        Arrays.sort(filenames, String.CASE_INSENSITIVE_ORDER);
+
+        if (filenames.length == 0) {
             String[] message = {"This folder does not contain any fonts."};
             otherFontsList.setListData(message);
             otherFontsList.setEnabled(false);
         } else {
-            otherFontsList.setListData(fnames);
+            otherFontsList.setListData(filenames);
             otherFontsList.setEnabled(true);
         }
-        
+
         mw.updateDisplay();
     }
-    
+
     public void selectItem(String name, String loc) {
         otherFontsList.setSelectedValue(name, true);
         int p = otherFontsList.getSelectedIndex();
         if (p >= 0)
-            mw.setCurrentFont(fnames[p].toString(), currentDirectory.toString(), p);
+            mw.setCurrentFont(filenames[p], currentDirectory.toString(), p);
     }
-    
-    public void selectNext() {
-        int i = otherFontsList.getSelectedIndex();
-        if (i >= 0) {
-            if ((i + 1) < fnames.length) {
-                i += 1;
-            }
-            setCurrentItem(i, true);
-        } else {
-            setCurrentItem(0, true);
-        }
-    }
-    
-    public void selectPrev() {
-        int i = otherFontsList.getSelectedIndex();
-        if (i >= 0) {
-            if ((i - 1) >= 0) {
-                i -= 1;
-            }
-            setCurrentItem(i, true);
-        } else {
-            setCurrentItem(0, true);
-        }
-    }
-    
-    private void setCurrentItem(int p, boolean internal) {
-        if (fnames != null) {
-            if (internal) {
-                otherFontsList.setSelectedIndex(p);
-                int spos = p * (otherFontsScrollPane.getVerticalScrollBar().getMaximum() / fnames.length);
-                spos -= (otherFontsScrollPane.getSize().height/2);
+
+    protected void setCurrentItem(int itemPos, boolean updateUI) {
+        if (filenames.length != 0) {
+            if (updateUI) {
+                otherFontsList.setSelectedIndex(itemPos);
+                int spos = itemPos * (otherFontsScrollPane.getVerticalScrollBar().getMaximum() / filenames.length);
+                spos -= (otherFontsScrollPane.getSize().height / 2);
                 otherFontsScrollPane.getVerticalScrollBar().setValue(spos);
             }
-            
-            if (p >= 0)
-                mw.setCurrentFont(fnames[p].toString(), currentDirectory.toString(), p);
+
+            if (itemPos >= 0)
+                mw.setCurrentFont(filenames[itemPos], currentDirectory.toString(), itemPos);
         }
     }
-    
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
-     */
-    private void initComponents() {//GEN-BEGIN:initComponents
-        locationPanel = new javax.swing.JPanel();
-        locationLabel = new javax.swing.JLabel();
-        locationTextField = new javax.swing.JTextField();
-        browseButton = new javax.swing.JButton();
-        otherFontsScrollPane = new javax.swing.JScrollPane();
-        otherFontsList = new javax.swing.JList();
+
+    private void initComponents() {
+        JButton browseButton = new JButton();
 
         setLayout(new java.awt.BorderLayout(2, 2));
 
+        JPanel locationPanel = new JPanel();
         locationPanel.setLayout(new java.awt.BorderLayout(4, 0));
+        locationPanel.add(new JLabel("Location:"), java.awt.BorderLayout.WEST);
 
-        locationLabel.setText("Location:");
-        locationPanel.add(locationLabel, java.awt.BorderLayout.WEST);
-
+        locationTextField = new JTextField();
         locationTextField.setToolTipText("Enter the location where fonts you wish to view are stored here");
         locationTextField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
-                locationTextFieldFocusGained(evt);
+                mw.setTyping(true);
             }
+
             public void focusLost(java.awt.event.FocusEvent evt) {
-                locationTextFieldFocusLost(evt);
+                mw.setTyping(false);
             }
         });
         locationTextField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                locationTextFieldKeyReleased(evt);
+                if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+                    mw.setTyping(false);
+                    File f = new File(locationTextField.getText());
+                    if (f.exists()) {
+                        if (f.isDirectory()) {
+                            currentDirectory = f;
+                            updateDisplay();
+                        } else {
+                            showError("The location does not point to a directory.");
+                        }
+                    } else {
+                        showError("Directory does not exist.");
+                    }
+                }
             }
         });
 
@@ -207,9 +125,16 @@ public class OtherFontsPanel extends javax.swing.JPanel implements ListPanel {
 
         browseButton.setText("Browse");
         browseButton.setToolTipText("Browse for font directory");
-        browseButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                browseButtonActionPerformed(evt);
+        browseButton.addActionListener(evt -> {
+            // Create new file chooser
+            JFileChooser fc = new JFileChooser(new File(""));
+            fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            // Show open dialog; this method does not return until the dialog is closed
+            fc.showOpenDialog(this);
+            if (fc.getSelectedFile() != null) {
+                currentDirectory = fc.getSelectedFile();
+                locationTextField.setText(currentDirectory.toString());
+                updateDisplay();
             }
         });
 
@@ -217,15 +142,17 @@ public class OtherFontsPanel extends javax.swing.JPanel implements ListPanel {
 
         add(locationPanel, java.awt.BorderLayout.NORTH);
 
+        otherFontsScrollPane = new JScrollPane();
         otherFontsScrollPane.setBorder(null);
+        otherFontsList = new JList<>();
         otherFontsList.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                otherFontsListKeyReleased(evt);
+                setCurrentItem(otherFontsList.getSelectedIndex(), false);
             }
         });
         otherFontsList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                otherFontsListMouseClicked(evt);
+                setCurrentItem(otherFontsList.getSelectedIndex(), false);
             }
         });
 
@@ -233,65 +160,9 @@ public class OtherFontsPanel extends javax.swing.JPanel implements ListPanel {
 
         add(otherFontsScrollPane, java.awt.BorderLayout.CENTER);
 
-    }//GEN-END:initComponents
+    }
 
-    private void locationTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_locationTextFieldFocusLost
-        mw.setTyping(false);
-    }//GEN-LAST:event_locationTextFieldFocusLost
-
-    private void locationTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_locationTextFieldFocusGained
-        mw.setTyping(true);
-    }//GEN-LAST:event_locationTextFieldFocusGained
-
-    private void otherFontsListKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_otherFontsListKeyReleased
-        setCurrentItem(otherFontsList.getSelectedIndex(), false);
-    }//GEN-LAST:event_otherFontsListKeyReleased
-
-    private void browseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseButtonActionPerformed
-        // Create new file chooser
-        JFileChooser fc = new JFileChooser(new File(""));
-        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        // Show open dialog; this method does not return until the dialog is closed
-        fc.showOpenDialog(this);
-        if (fc.getSelectedFile() != null) {
-            currentDirectory = fc.getSelectedFile();
-            locationTextField.setText(currentDirectory.toString());
-            updateDisplay();
-        }
-    }//GEN-LAST:event_browseButtonActionPerformed
-
-    private void otherFontsListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_otherFontsListMouseClicked
-        setCurrentItem(otherFontsList.getSelectedIndex(), false);
-    }//GEN-LAST:event_otherFontsListMouseClicked
-
-    private void locationTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_locationTextFieldKeyReleased
-        if (evt.getKeyCode() == evt.VK_ENTER) {
-            mw.setTyping(false);
-            File f = new File(locationTextField.getText());
-            if (f.exists()) {
-                if (f.isDirectory()) {
-                    currentDirectory = f;
-                    updateDisplay();
-                } else {
-                    new JOptionPane().showMessageDialog(this, "The location does not point to a directory.", "Error!", JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                new JOptionPane().showMessageDialog(this, "Directory does not exist.", "Error!", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }//GEN-LAST:event_locationTextFieldKeyReleased
-    
-    /** Exit the Application */
-    private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
-        // Do nothing
-    }//GEN-LAST:event_exitForm
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton browseButton;
-    private javax.swing.JLabel locationLabel;
-    private javax.swing.JPanel locationPanel;
-    private javax.swing.JTextField locationTextField;
-    private javax.swing.JList otherFontsList;
-    private javax.swing.JScrollPane otherFontsScrollPane;
-    // End of variables declaration//GEN-END:variables
+    private void showError(String text) {
+        JOptionPane.showMessageDialog(OtherFontsPanel.this, text, "Error!", JOptionPane.ERROR_MESSAGE);
+    }
 }

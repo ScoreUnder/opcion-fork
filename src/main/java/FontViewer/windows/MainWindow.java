@@ -1,287 +1,213 @@
-/*
-  Opcion Font Viewer
-  Copyright (C) 2004 Paul Chiu. All Rights Reserved.
- 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
- 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
- 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-
-/*
- * MainWindow.java
- *
- * Created on 28 January 2004, 12:03
- */
 package FontViewer.windows;
 
 import FontViewer.components.*;
-import FontViewer.resources.MyImageIcon;
 import FontViewer.windows.dialogs.AboutDialog;
 import FontViewer.windows.dialogs.TextAreaFromFileDialog;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
 public class MainWindow extends javax.swing.JFrame {
-    // Debug constants
-    private final boolean DEBUG_SIZE = false;
-    
     // Constants
-    private final int SYSTEM_FONTS = 0;
-    private final int OTHER_FONTS = 1;
-    private final int FAVOURITE_FONTS = 2;
     private final int[] FONT_SIZES = {6, 8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 42, 48, 56, 72, 84};
     private final String ADD = "Add to Favourites";
     private final String REM = "Remove from Favourites";
-    
+
     // Variables
     private ListPanel currentPanel;
     private String fname;
     private String floc;
     private boolean typingLoc;
-    
-    // List view properties
-    private int rows = 10;
-    private int columns = 1;
-    
-    /** Creates new form mainWindow */
-    public MainWindow() {
-        // Set Look and Feel
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-            // Can't load native L&F. Not the end of the world.
-            e.printStackTrace();
-        }
 
+    // List view properties
+    private static final int ROWS = 10;
+    private static final int COLUMNS = 1;
+
+    public MainWindow() {
         initComponents();
 
         menuBar.requestFocus();
 
         // Flag for whether user is typing in location field
         typingLoc = false;
-        
+
         // Disable hidden menu (used to catch keystrokes)
         hiddenMenu.setVisible(false);
         hiddenMenu.setEnabled(false);
-        
+
         // Set current panel
-        currentPanel = (ListPanel)systemFontsPanel;
-        
-        // Draw ListView
-        ((ListViewPanel)listViewPanel).setView(systemFontsPanel);
+        changeCurrentPanel(systemFontsPanel);
     }
-    
+
     public void addToFav() {
         addToFav(fname, floc);
     }
-    
+
     public void removeFromFav() {
         removeFromFav(fname, floc);
     }
-    
+
     public void addToFav(String name, String loc) {
-        if (!((FavouriteFontsPanel)favouriteFontsPanel).addToFav(name, loc)) {
-            new JOptionPane().showMessageDialog(this, "Font already in favourites.", "Error!", JOptionPane.ERROR_MESSAGE);
+        if (!favouriteFontsPanel.addToFav(name, loc)) {
+            JOptionPane.showMessageDialog(this, "Font already in favourites.", "Error!", JOptionPane.ERROR_MESSAGE);
         } else {
             updateDisplay();
         }
     }
-    
+
     public void removeFromFav(String name, String loc) {
-        if (!((FavouriteFontsPanel)favouriteFontsPanel).removeFromFav(name, loc)) {
-            new JOptionPane().showMessageDialog(this, "Font not found in favourites.", "Error!", JOptionPane.ERROR_MESSAGE);
+        if (!favouriteFontsPanel.removeFromFav(name, loc)) {
+            JOptionPane.showMessageDialog(this, "Font not found in favourites.", "Error!", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     public void setCurrentFont(String name, String loc, int position) {
         fname = name;
         floc = loc;
-        ((ListViewPanel)listViewPanel).setPosition(position);
-        ((SampleTextPanel)sampleTextPanel).setCurrentFont(name, loc);
+        listViewPanel.setPosition(position);
+        sampleTextPanel.setCurrentFont(name, loc);
     }
-    
+
     public void setFontSize(int s) {
         if (listViewPanel != null) {
-            ((ListViewPanel)listViewPanel).setFontSize(s);
+            listViewPanel.setFontSize(s);
         }
     }
-    
+
     public void updateDisplay() {
-        ((ListViewPanel)listViewPanel).updateDisplay();
+        listViewPanel.updateDisplay();
     }
-    
+
     public void setTyping(boolean t) {
         typingLoc = t;
-        if (t == false) {
+        if (!t) {
             menuBar.requestFocus();
         }
     }
-    
+
     private void saveFavToFile(File f) {
         try {
             // Init stuff
-            FavouriteFontsPanel fav = (FavouriteFontsPanel)favouriteFontsPanel;
+            FavouriteFontsPanel fav = favouriteFontsPanel;
             BufferedWriter bw = new BufferedWriter(new FileWriter(f));
-            String[] s = new String[3];
-            
+
             // Sort favourites
             fav.sortAllRowsBy(0, true);
 
-            // Write favourties
-            for (int i=0; i<fav.getNumItems(); i++) {
-                s = fav.getItem(i);
+            // Write favourites
+            for (int i = 0; i < fav.getNumItems(); i++) {
+                String[] s = fav.getItem(i);
                 bw.write(s[1] + File.separator + s[0]);
                 bw.newLine();
             }
             bw.close();
         } catch (IOException ioe) {
-            new JOptionPane().showMessageDialog(this, "Cannot write to file.", "Error!", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Cannot write to file.", "Error!", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
-     */
-    private void initComponents() {//GEN-BEGIN:initComponents
-        mainSplitPane = new javax.swing.JSplitPane();
-        quickViewSplitPane = new javax.swing.JSplitPane();
-        tabbedPane = new javax.swing.JTabbedPane();
+
+    private void initComponents() {
         systemFontsPanel = new SystemFontsPanel(this);
-        otherFontsPanel = new OtherFontsPanel(this);
         favouriteFontsPanel = new FavouriteFontsPanel(this);
         sampleTextPanel = new SampleTextPanel(this, FONT_SIZES);
-        listViewPanel = new ListViewPanel(favouriteFontsPanel, rows, columns);
-        menuBar = new javax.swing.JMenuBar();
-        fileMenu = new javax.swing.JMenu();
-        savFavsMenuItem = new javax.swing.JMenuItem();
-        setSampleTextMenuItem = new javax.swing.JMenuItem();
-        fileSep0 = new javax.swing.JSeparator();
-        quitMenuItem = new javax.swing.JMenuItem();
-        viewsMenu = new javax.swing.JMenu();
-        listViewCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
-        helpMenu = new javax.swing.JMenu();
-        addToFavHelpMenuItem = new javax.swing.JMenuItem();
-        installFontsMenuItem = new javax.swing.JMenuItem();
-        shortcutsMenuItem = new javax.swing.JMenuItem();
-        helpSep0 = new javax.swing.JSeparator();
-        aboutMenuItem = new javax.swing.JMenuItem();
-        hiddenMenu = new javax.swing.JMenu();
-        prevPageMenuItem = new javax.swing.JMenuItem();
-        nextPageMenuItem = new javax.swing.JMenuItem();
-        upMenuItem = new javax.swing.JMenuItem();
-        downMenuItem = new javax.swing.JMenuItem();
-        addOrRemMenuItem = new javax.swing.JMenuItem();
+        listViewPanel = new ListViewPanel(favouriteFontsPanel, ROWS, COLUMNS);
+        menuBar = new JMenuBar();
+        hiddenMenu = new JMenu();
 
         getContentPane().setLayout(new java.awt.BorderLayout(0, 5));
 
         setTitle("Opcion Font Viewer");
-        setFont(new java.awt.Font("Dialog", 0, 10));
-        setIconImage(new MyImageIcon("IconSmall.png").getImage());
-        addComponentListener(new java.awt.event.ComponentAdapter() {
-            public void componentResized(java.awt.event.ComponentEvent evt) {
-                formComponentResized(evt);
-            }
-        });
+        setFont(new java.awt.Font("Dialog", Font.PLAIN, 10));
+        setIconImage(new ImageIcon(this.getClass().getClassLoader().getResource("FontViewer/resources/icons/IconSmall.png")).getImage());
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowActivated(java.awt.event.WindowEvent evt) {
-                formWindowActivated(evt);
-            }
             public void windowClosing(java.awt.event.WindowEvent evt) {
-                exitForm(evt);
+                System.exit(0);
             }
         });
 
-        mainSplitPane.setBorder(null);
-        mainSplitPane.setDividerSize(5);
-        mainSplitPane.setResizeWeight(0.5);
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.addTab("System Fonts", systemFontsPanel);
+        tabbedPane.addTab("Other Fonts", new OtherFontsPanel(this));
+        tabbedPane.addTab("Favourite Fonts", favouriteFontsPanel);
+        tabbedPane.addChangeListener(evt -> changeCurrentPanel((ListPanel) tabbedPane.getSelectedComponent()));
+
+        JSplitPane quickViewSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tabbedPane, sampleTextPanel);
         quickViewSplitPane.setBorder(null);
         quickViewSplitPane.setDividerSize(5);
-        quickViewSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         quickViewSplitPane.setResizeWeight(0.5);
-        tabbedPane.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tabbedPaneMouseClicked(evt);
-            }
-        });
 
-        tabbedPane.addTab("System Fonts", systemFontsPanel);
-
-        tabbedPane.addTab("Other Fonts", otherFontsPanel);
-
-        tabbedPane.addTab("Favourite Fonts", favouriteFontsPanel);
-
-        quickViewSplitPane.setLeftComponent(tabbedPane);
-
-        quickViewSplitPane.setRightComponent(sampleTextPanel);
-
-        mainSplitPane.setLeftComponent(quickViewSplitPane);
-
-        mainSplitPane.setRightComponent(listViewPanel);
+        JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, quickViewSplitPane, listViewPanel);
+        //mainSplitPane.setBorder(null);
+        mainSplitPane.setDividerSize(5);
+        mainSplitPane.setResizeWeight(0.5);
+        mainSplitPane.setOneTouchExpandable(true);
 
         getContentPane().add(mainSplitPane, java.awt.BorderLayout.CENTER);
 
+        JMenu fileMenu = new JMenu("File");
         fileMenu.setMnemonic('f');
-        fileMenu.setText("File");
+        JMenuItem savFavsMenuItem = new JMenuItem("Save Favourites");
         savFavsMenuItem.setMnemonic('s');
-        savFavsMenuItem.setText("Save Favourites");
-        savFavsMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                savFavsMenuItemActionPerformed(evt);
+        savFavsMenuItem.addActionListener(evt -> {
+            if (((ListPanel) favouriteFontsPanel).getNumItems() <= 0) {
+                JOptionPane.showMessageDialog(this, "There are no favourite fonts to save.", "Error!", JOptionPane.ERROR_MESSAGE);
+            } else {
+                // Create new file chooser
+                JFileChooser fc = new JFileChooser(new File(""));
+                // Show save dialog; this method does not return until the dialog is closed
+                fc.showSaveDialog(this);
+                if (fc.getSelectedFile() != null) {
+                    File f = fc.getSelectedFile();
+                    if (!f.exists() || JOptionPane.showConfirmDialog(this, String.format("The file %s already exists, do you\nwant to overwrite?", f.getName()), "Warning!", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                        saveFavToFile(f);
+                    }
+                }
             }
         });
 
         fileMenu.add(savFavsMenuItem);
 
-        setSampleTextMenuItem.setMnemonic('t');
-        setSampleTextMenuItem.setText("Set Sample Text");
-        setSampleTextMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                setSampleTextMenuItemActionPerformed(evt);
+        JMenuItem setSampleTextMenuItem = new JMenuItem("Set Sample Text", 't');
+        setSampleTextMenuItem.addActionListener(evt -> {
+            String t = JOptionPane.showInputDialog(this, "Set sample text as:", "Change Sample Text", JOptionPane.QUESTION_MESSAGE);
+            if (t != null) {
+                sampleTextPanel.setSampleText(t);
+                listViewPanel.setSampleText(t);
             }
         });
-
         fileMenu.add(setSampleTextMenuItem);
 
-        fileMenu.add(fileSep0);
+        fileMenu.add(new JSeparator());
 
-        quitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_MASK));
-        quitMenuItem.setMnemonic('q');
-        quitMenuItem.setText("Quit");
-        quitMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                quitMenuItemActionPerformed(evt);
-            }
-        });
+        JMenuItem quitMenuItem = new JMenuItem("Quit", 'q');
+        quitMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, InputEvent.ALT_DOWN_MASK));
+        quitMenuItem.addActionListener(evt -> System.exit(0));
 
         fileMenu.add(quitMenuItem);
 
         menuBar.add(fileMenu);
 
+        JMenu viewsMenu = new JMenu("Views");
         viewsMenu.setMnemonic('v');
-        viewsMenu.setText("Views");
+        JCheckBoxMenuItem listViewCheckBoxMenuItem = new JCheckBoxMenuItem();
         listViewCheckBoxMenuItem.setMnemonic('l');
         listViewCheckBoxMenuItem.setSelected(true);
         listViewCheckBoxMenuItem.setText("List View");
-        listViewCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                listViewCheckBoxMenuItemActionPerformed(evt);
+        listViewCheckBoxMenuItem.addActionListener(evt -> {
+            if (listViewCheckBoxMenuItem.isSelected()) {
+                listViewPanel.setVisible(true);
+                mainSplitPane.setDividerLocation(mainSplitPane.getLastDividerLocation());
+                mainSplitPane.setEnabled(true);
+            } else {
+                mainSplitPane.setDividerLocation(1.0);
+                mainSplitPane.setEnabled(false);
+                listViewPanel.setVisible(false);
             }
         });
 
@@ -289,98 +215,88 @@ public class MainWindow extends javax.swing.JFrame {
 
         menuBar.add(viewsMenu);
 
+        JMenu helpMenu = new JMenu("Help");
         helpMenu.setMnemonic('h');
-        helpMenu.setText("Help");
-        addToFavHelpMenuItem.setMnemonic('f');
-        addToFavHelpMenuItem.setText("Add Font to Favourites");
-        addToFavHelpMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addToFavHelpMenuItemActionPerformed(evt);
-            }
-        });
 
+        JMenuItem addToFavHelpMenuItem = new JMenuItem("Add Font to Favourites", 'f');
+        addToFavHelpMenuItem.addActionListener(evt -> showTextHelp("Help - Add Font to Favourites", "addfavHelp.txt"));
         helpMenu.add(addToFavHelpMenuItem);
 
-        installFontsMenuItem.setMnemonic('i');
-        installFontsMenuItem.setText("Installing Fonts");
-        installFontsMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                installFontsMenuItemActionPerformed(evt);
-            }
-        });
-
+        JMenuItem installFontsMenuItem = new JMenuItem("Installing Fonts", 'i');
+        installFontsMenuItem.addActionListener(evt -> showTextHelp("Help - Installing Fonts", "installHelp.txt"));
         helpMenu.add(installFontsMenuItem);
 
-        shortcutsMenuItem.setMnemonic('s');
-        shortcutsMenuItem.setText("Shortcut Keys");
-        shortcutsMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                shortcutsMenuItemActionPerformed(evt);
-            }
-        });
-
+        JMenuItem shortcutsMenuItem = new JMenuItem("Shortcut Keys", 's');
+        shortcutsMenuItem.addActionListener(evt -> showTextHelp("Help - Shortcut Keys", "shortcutsHelp.txt"));
         helpMenu.add(shortcutsMenuItem);
 
-        helpMenu.add(helpSep0);
+        helpMenu.add(new JSeparator());
 
-        aboutMenuItem.setMnemonic('a');
-        aboutMenuItem.setText("About");
-        aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                aboutMenuItemActionPerformed(evt);
-            }
-        });
-
+        JMenuItem aboutMenuItem = new JMenuItem("About", 'a');
+        aboutMenuItem.addActionListener(evt -> new AboutDialog(this).setVisible(true));
         helpMenu.add(aboutMenuItem);
 
         menuBar.add(helpMenu);
 
         hiddenMenu.setText("hidden");
-        prevPageMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_COMMA, 0));
-        prevPageMenuItem.setText("prevPage");
-        prevPageMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                prevPageMenuItemActionPerformed(evt);
+        JMenuItem prevPageMenuItem = new JMenuItem("prevPage");
+        prevPageMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, 0));
+        prevPageMenuItem.addActionListener(evt -> {
+            if (!typingLoc) {
+                menuBar.requestFocus();
+                listViewPanel.prevPage();
             }
         });
 
         hiddenMenu.add(prevPageMenuItem);
 
-        nextPageMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_PERIOD, 0));
-        nextPageMenuItem.setText("nextPage");
-        nextPageMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nextPageMenuItemActionPerformed(evt);
+        JMenuItem nextPageMenuItem = new JMenuItem("nextPage");
+        nextPageMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, 0));
+        nextPageMenuItem.addActionListener(evt -> {
+            if (!typingLoc) {
+                menuBar.requestFocus();
+                listViewPanel.nextPage();
             }
         });
 
         hiddenMenu.add(nextPageMenuItem);
 
-        upMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_K, 0));
-        upMenuItem.setText("up");
-        upMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                upMenuItemActionPerformed(evt);
+        JMenuItem upMenuItem = new JMenuItem("up");
+        upMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, 0));
+        upMenuItem.addActionListener(evt -> {
+            if (!typingLoc) {
+                menuBar.requestFocus();
+                currentPanel.selectPrev();
             }
         });
 
         hiddenMenu.add(upMenuItem);
 
-        downMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M, 0));
-        downMenuItem.setText("down");
-        downMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                downMenuItemActionPerformed(evt);
+        JMenuItem downMenuItem = new JMenuItem("down");
+        downMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, 0));
+        downMenuItem.addActionListener(evt -> {
+            if (!typingLoc) {
+                menuBar.requestFocus();
+                currentPanel.selectNext();
             }
         });
 
         hiddenMenu.add(downMenuItem);
 
-        addOrRemMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SPACE, 0));
-        addOrRemMenuItem.setText("addOrRem");
-        addOrRemMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addOrRemMenuItemActionPerformed(evt);
+        JMenuItem addOrRemMenuItem = new JMenuItem("addOrRem");
+        addOrRemMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0));
+        addOrRemMenuItem.addActionListener(evt -> {
+            if (!typingLoc) {
+                menuBar.requestFocus();
+                if (currentPanel instanceof FavouriteFontsPanel) {
+                    removeFromFav();
+                } else {
+                    if (!favouriteFontsPanel.addToFav(fname, floc)) {
+                        removeFromFav();
+                    } else {
+                        updateDisplay();
+                    }
+                }
             }
         });
 
@@ -391,185 +307,38 @@ public class MainWindow extends javax.swing.JFrame {
         setJMenuBar(menuBar);
 
         pack();
-    }//GEN-END:initComponents
+    }
 
-    private void addToFavHelpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addToFavHelpMenuItemActionPerformed
-        TextAreaFromFileDialog taffd = new TextAreaFromFileDialog(this, "Help - Add Font to Favourites", "addfavHelp.txt");
-        taffd.setWrap(true);
-        taffd.setVisible(true);
-    }//GEN-LAST:event_addToFavHelpMenuItemActionPerformed
-
-    private void savFavsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_savFavsMenuItemActionPerformed
-        if (((ListPanel)favouriteFontsPanel).getNumItems() <= 0) {
-            new JOptionPane().showMessageDialog(this, "There are no favourite fonts to save.", "Error!", JOptionPane.ERROR_MESSAGE);
-        } else {
-            // Create new file chooser
-            JFileChooser fc = new JFileChooser(new File(""));
-            // Show save dialog; this method does not return until the dialog is closed
-            fc.showSaveDialog(this);
-            if (fc.getSelectedFile() != null) {
-                File f = fc.getSelectedFile();
-                if (f.exists()) {
-                    // Ask user if they want to overwrite
-                    if ((new JOptionPane().showConfirmDialog(this, ("The file " + f.getName() + " already exists, do you\nwant to overwrite?"), "Warning!", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE)) == JOptionPane.YES_OPTION) {
-                        saveFavToFile(f);
-                    }
-                } else {
-                    saveFavToFile(f);
-                }
-            }
-        }
-    }//GEN-LAST:event_savFavsMenuItemActionPerformed
-
-    private void shortcutsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_shortcutsMenuItemActionPerformed
-        TextAreaFromFileDialog taffd = new TextAreaFromFileDialog(this, "Help - Shortcut Keys", "shortcutsHelp.txt");
-        taffd.setWrap(false);
-        taffd.setVisible(true);
-    }//GEN-LAST:event_shortcutsMenuItemActionPerformed
-
-    private void addOrRemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addOrRemMenuItemActionPerformed
-        if (!typingLoc) {
-            menuBar.requestFocus();
-            if (currentPanel instanceof FavouriteFontsPanel) {
-                removeFromFav();
-            } else {
-                if (!((FavouriteFontsPanel)favouriteFontsPanel).addToFav(fname, floc)) {
-                    removeFromFav();
-                } else {
-                    updateDisplay();
-                }
-            }
-        }
-    }//GEN-LAST:event_addOrRemMenuItemActionPerformed
-    
-    private void downMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downMenuItemActionPerformed
-        if (!typingLoc) {
-            menuBar.requestFocus();
-            currentPanel.selectNext();
-        }
-    }//GEN-LAST:event_downMenuItemActionPerformed
-    
-    private void nextPageMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextPageMenuItemActionPerformed
-        if (!typingLoc) {
-            menuBar.requestFocus();
-            ((ListViewPanel)listViewPanel).nextPage();
-        }
-    }//GEN-LAST:event_nextPageMenuItemActionPerformed
-
-    private void prevPageMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prevPageMenuItemActionPerformed
-        if (!typingLoc) {
-            menuBar.requestFocus();
-            ((ListViewPanel)listViewPanel).prevPage();
-        }
-    }//GEN-LAST:event_prevPageMenuItemActionPerformed
-
-    private void upMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upMenuItemActionPerformed
-        if (!typingLoc) {
-            menuBar.requestFocus();
-            currentPanel.selectPrev();
-        }
-    }//GEN-LAST:event_upMenuItemActionPerformed
-
-    private void setSampleTextMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setSampleTextMenuItemActionPerformed
-        String t = new JOptionPane().showInputDialog(this, "Set sample text as:", "Change Sample Text", JOptionPane.QUESTION_MESSAGE);
-        if (t != null) {
-            ((SampleTextPanel)sampleTextPanel).setSampleText(t);
-            ((ListViewPanel)listViewPanel).setSampleText(t);
-        }
-    }//GEN-LAST:event_setSampleTextMenuItemActionPerformed
-
-    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
-        if (DEBUG_SIZE) {
-            System.out.println("W: " + this.getSize().width + ", " + this.getSize().height);
-            System.out.println("Left top: " + mainSplitPane.getTopComponent().getSize().width + ", " + mainSplitPane.getTopComponent().getSize().height);
-            System.out.println("Left btm: " + mainSplitPane.getBottomComponent().getSize().width + ", " + mainSplitPane.getBottomComponent().getSize().height);
-            System.out.println("Right: " + quickViewSplitPane.getRightComponent().getSize().width + ", " + mainSplitPane.getRightComponent().getSize().height);
-        }
-    }//GEN-LAST:event_formComponentResized
-
-    private void listViewCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listViewCheckBoxMenuItemActionPerformed
-        if (listViewCheckBoxMenuItem.isSelected()) {
-            listViewPanel.setVisible(true);
-            mainSplitPane.setDividerLocation(mainSplitPane.getLastDividerLocation());
-            mainSplitPane.setEnabled(true);
-        } else {
-            mainSplitPane.setDividerLocation(1.0);
-            mainSplitPane.setEnabled(false);
-            listViewPanel.setVisible(false);
-        }
-    }//GEN-LAST:event_listViewCheckBoxMenuItemActionPerformed
-
-    private void tabbedPaneMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabbedPaneMouseClicked
-        // Get selected tab
-        currentPanel = (ListPanel)tabbedPane.getSelectedComponent();
+    private void changeCurrentPanel(ListPanel newPanel) {
+        currentPanel = newPanel;
 
         // Update list
-        ((ListViewPanel)listViewPanel).setView((JPanel)currentPanel);
-        
+        listViewPanel.setView((JPanel) newPanel);
+
         // Update sampleTextPanel
-        String[] s = currentPanel.getCurrentItem();
+        String[] s = newPanel.getCurrentItem();
         if (s[0] != null) {
             setCurrentFont(s[0], s[1], Integer.parseInt(s[2]));
         }
-        
+
         // Set fav button action
-        if (currentPanel instanceof FavouriteFontsPanel) {
-            ((SampleTextPanel)sampleTextPanel).setFavButtonAction(REM);
+        if (newPanel instanceof FavouriteFontsPanel) {
+            sampleTextPanel.setFavButtonAction(REM);
         } else {
-            ((SampleTextPanel)sampleTextPanel).setFavButtonAction(ADD);
+            sampleTextPanel.setFavButtonAction(ADD);
         }
-    }//GEN-LAST:event_tabbedPaneMouseClicked
-                
-    private void installFontsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_installFontsMenuItemActionPerformed
-        TextAreaFromFileDialog taffd = new TextAreaFromFileDialog(this, "Help - Installing Fonts", "installHelp.txt");
+    }
+
+    private void showTextHelp(String title, String filename) {
+        TextAreaFromFileDialog taffd = new TextAreaFromFileDialog(this, title, filename);
         taffd.setWrap(false);
         taffd.setVisible(true);
-    }//GEN-LAST:event_installFontsMenuItemActionPerformed
-    
-    private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
-        new AboutDialog(this).show();
-    }//GEN-LAST:event_aboutMenuItemActionPerformed
-    
-    private void quitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quitMenuItemActionPerformed
-        System.exit(0);
-    }//GEN-LAST:event_quitMenuItemActionPerformed
-    
-    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
-    }//GEN-LAST:event_formWindowActivated
-                                    
-    /** Exit the Application */
-    private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
-        System.exit(0);
-    }//GEN-LAST:event_exitForm
-    
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem aboutMenuItem;
-    private javax.swing.JMenuItem addOrRemMenuItem;
-    private javax.swing.JMenuItem addToFavHelpMenuItem;
-    private javax.swing.JMenuItem downMenuItem;
-    private javax.swing.JPanel favouriteFontsPanel;
-    private javax.swing.JMenu fileMenu;
-    private javax.swing.JSeparator fileSep0;
-    private javax.swing.JMenu helpMenu;
-    private javax.swing.JSeparator helpSep0;
-    private javax.swing.JMenu hiddenMenu;
-    private javax.swing.JMenuItem installFontsMenuItem;
-    private javax.swing.JCheckBoxMenuItem listViewCheckBoxMenuItem;
-    private javax.swing.JPanel listViewPanel;
-    private javax.swing.JSplitPane mainSplitPane;
-    private javax.swing.JMenuBar menuBar;
-    private javax.swing.JMenuItem nextPageMenuItem;
-    private javax.swing.JPanel otherFontsPanel;
-    private javax.swing.JMenuItem prevPageMenuItem;
-    private javax.swing.JSplitPane quickViewSplitPane;
-    private javax.swing.JMenuItem quitMenuItem;
-    private javax.swing.JPanel sampleTextPanel;
-    private javax.swing.JMenuItem savFavsMenuItem;
-    private javax.swing.JMenuItem setSampleTextMenuItem;
-    private javax.swing.JMenuItem shortcutsMenuItem;
-    private javax.swing.JPanel systemFontsPanel;
-    private javax.swing.JTabbedPane tabbedPane;
-    private javax.swing.JMenuItem upMenuItem;
-    private javax.swing.JMenu viewsMenu;
-    // End of variables declaration//GEN-END:variables
+    }
+
+    private FavouriteFontsPanel favouriteFontsPanel;
+    private JMenu hiddenMenu;
+    private ListViewPanel listViewPanel;
+    private JMenuBar menuBar;
+    private SampleTextPanel sampleTextPanel;
+    private SystemFontsPanel systemFontsPanel;
 }
