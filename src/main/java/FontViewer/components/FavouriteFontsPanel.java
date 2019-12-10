@@ -1,16 +1,17 @@
 package FontViewer.components;
 
+import FontViewer.FontFile;
 import FontViewer.windows.MainWindow;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.BorderLayout;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Vector;
+import java.util.List;
 
-import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public class FavouriteFontsPanel extends AbstractListPanel {
@@ -18,35 +19,34 @@ public class FavouriteFontsPanel extends AbstractListPanel {
     private static final int COL_FONTNAME = 0;
 
     private MainWindow mw;
-    private DefaultTableModel tm;
+    private FontTableModel tm;
     private int sortCol;
     private boolean sortAscend;
     private JTable favouritesTable;
 
     public FavouriteFontsPanel(MainWindow mw) {
+        tm = new FontTableModel();
         initComponents();
 
         // Init global variables
         this.mw = mw;
-        tm = (DefaultTableModel) favouritesTable.getModel();
         sortCol = COL_FONTNAME;
         sortAscend = true;
-        favouritesTable.setAutoCreateColumnsFromModel(false);
     }
 
-    public boolean addToFav(String name, String loc) {
+    public boolean addToFav(FontFile font) {
         // If font not already in favs, add to favs
-        if (getItemNumber(name, loc) == NOT_FOUND) {
-            tm.addRow(new Object[]{name, loc});
+        if (getItemNumber(font) == NOT_FOUND) {
+            tm.addRow(font);
             return true;
         } else {
             return false;
         }
     }
 
-    public boolean removeFromFav(String name, String loc) {
+    public boolean removeFromFav(FontFile font) {
         boolean removed = false;
-        int p = getItemNumber(name, loc);
+        int p = getItemNumber(font);
 
         // Remove item
         if (p != NOT_FOUND) {
@@ -64,48 +64,40 @@ public class FavouriteFontsPanel extends AbstractListPanel {
         return removed;
     }
 
-    public int getItemNumber(String name, String loc) {
-        int itemNum = -1;
-        Object[] data = tm.getDataVector().toArray();
-        String font = String.format("[%s, %s]", name, loc);
-
+    public int getItemNumber(FontFile font) {
         // Check selected font is already in Favourites
-        for (int i = 0; i < data.length; i++) {
-            if (data[i].toString().equals(font)) {
-                itemNum = i;
-                break;
+        for (int i = 0; i < tm.getRowCount(); i++) {
+            if (tm.getRow(i).equals(font)) {
+                return i;
             }
         }
 
-        return itemNum;
+        return NOT_FOUND;
     }
 
-    public String[] getItem(int itemNumber) {
-        String[] s = new String[3];
-
-        // Assign current item to s[]
-        if ((itemNumber >= 0) && (itemNumber < tm.getRowCount())) {
-            s[0] = tm.getValueAt(itemNumber, 0).toString();
-            s[1] = tm.getValueAt(itemNumber, 1).toString();
-            s[2] = String.valueOf(itemNumber);
+    public FontFile getItem(int itemNumber) {
+        if (itemNumber >= 0 && itemNumber < tm.getRowCount()) {
+            return tm.getRow(itemNumber);
         }
-
-        return s;
+        return null;
     }
 
     public int getNumItems() {
         return tm.getRowCount();
     }
 
-    public String[] getCurrentItem() {
+    public FontFile getCurrentItem() {
         // Get current item
-        String[] s = super.getCurrentItem();
+        FontFile s = super.getCurrentItem();
 
-        // Sort table
-        sortAllRowsBy(sortCol, sortAscend);
+        // TODO: why is this done here?
+        if (s != null) {
+            // Sort table
+            sortAllRowsBy(sortCol, sortAscend);
 
-        // Select selected item
-        favouritesTable.changeSelection(getItemNumber(s[0], s[1]), 0, false, false);
+            // Select selected item
+            favouritesTable.changeSelection(getItemNumber(s), 0, false, false);
+        }
 
         return s;
     }
@@ -118,41 +110,28 @@ public class FavouriteFontsPanel extends AbstractListPanel {
         if (updateUI)
             favouritesTable.changeSelection(p, 0, false, false);
 
-        String[] s = getCurrentItem();
-        try {
-            if (p >= 0)
-                mw.setCurrentFont(s[0], s[1], Integer.parseInt(s[2]));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if (p >= 0)
+            mw.setCurrentFont(getCurrentItem(), getCurrentItemNum());
     }
 
-    public void selectItem(String name, String loc) {
-        setCurrentItem(getItemNumber(name, loc), false);
+    public void selectItem(FontFile font) {
+        setCurrentItem(getItemNumber(font), false);
     }
 
-    // sortAllRowsBy taken from:
-    //      http://javaalmanac.com/egs/javax.swing.table/Sorter.html
     public void sortAllRowsBy(int colIndex, boolean ascending) {
-        Vector<Vector> data = tm.getDataVector();
-        data.sort(new ColumnSorter(colIndex, ascending));
-        tm.fireTableStructureChanged();
+        tm.sortBy(colIndex, ascending);
     }
 
-    // ColumnSorter taken from:
-    //      http://javaalmanac.com/egs/javax.swing.table/Sorter.html
-    public static class ColumnSorter implements Comparator<Vector> {
-        private int colIndex;
+    public static class CaseInsensitiveOrder implements Comparator<String> {
         private boolean ascending;
 
-        ColumnSorter(int colIndex, boolean ascending) {
-            this.colIndex = colIndex;
+        CaseInsensitiveOrder(boolean ascending) {
             this.ascending = ascending;
         }
 
-        public int compare(Vector a, Vector b) {
-            String o1 = (String) a.get(colIndex);
-            String o2 = (String) b.get(colIndex);
+        public int compare(String a, String b) {
+            String o1 = a;
+            String o2 = b;
 
             // Treat nulls like empty strings
             if (o1 == null) o1 = "";
@@ -172,14 +151,7 @@ public class FavouriteFontsPanel extends AbstractListPanel {
 
         setLayout(new BorderLayout());
 
-        favouritesTable.setModel(new DefaultTableModel(
-                new Object[][]{},
-                new String[]{"Font Name", "Location"}
-        ) {
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return false;
-            }
-        });
+        favouritesTable.setModel(tm);
         favouritesTable.setDoubleBuffered(true);
         favouritesTable.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -191,10 +163,87 @@ public class FavouriteFontsPanel extends AbstractListPanel {
                 setCurrentItem(favouritesTable.getSelectedRow(), false);
             }
         });
+        favouritesTable.setAutoCreateColumnsFromModel(false);
 
         JScrollPane favouritesScrollPane = new JScrollPane();
         favouritesScrollPane.setBorder(null);
         favouritesScrollPane.setViewportView(favouritesTable);
         add(favouritesScrollPane, BorderLayout.CENTER);
+    }
+
+    private static class FontTableModel extends AbstractTableModel {
+        private List<FontFile> fonts = new ArrayList<>();
+
+        @Override
+        public int getRowCount() {
+            return fonts.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return 2;
+        }
+
+        @Override
+        public String getColumnName(int columnIndex) {
+            if (columnIndex == 0)
+                return "Font Name";
+            else
+                return "Location";
+        }
+
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            return String.class;
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            FontFile row = getRow(rowIndex);
+            if (columnIndex == 0) return row.getName();
+            else return row.getLocation();
+        }
+
+        FontFile getRow(int rowIndex) {
+            return fonts.get(rowIndex);
+        }
+
+        void addRow(FontFile font) {
+            fonts.add(font);
+            fireTableDataChanged();
+        }
+
+        void removeRow(int index) {
+            fonts.remove(index);
+            fireTableRowsDeleted(index, index);
+        }
+
+        void sortBy(int colIndex, boolean ascending) {
+            fonts.sort(new ColumnComparatorAdaptor(colIndex, new CaseInsensitiveOrder(ascending)));
+            fireTableDataChanged();
+        }
+
+        @Override
+        public void setValueAt(Object o, int rowIndex, int columnIndex) {
+            throw new UnsupportedOperationException("Single-cell editing is not supported");
+        }
+
+        private static class ColumnComparatorAdaptor implements Comparator<FontFile> {
+            private int columnIndex;
+            private Comparator<String> columnComparator;
+
+            ColumnComparatorAdaptor(int columnIndex, Comparator<String> columnComparator) {
+                this.columnIndex = columnIndex;
+                this.columnComparator = columnComparator;
+            }
+
+            @Override
+            public int compare(FontFile a, FontFile b) {
+                if (columnIndex == 0)
+                    return columnComparator.compare(a.getName(), b.getName());
+                else
+                    return columnComparator.compare(a.getLocation(), b.getLocation());
+            }
+        }
     }
 }

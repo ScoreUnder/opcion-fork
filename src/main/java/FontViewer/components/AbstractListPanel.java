@@ -1,5 +1,7 @@
 package FontViewer.components;
 
+import FontViewer.FontFile;
+
 import javax.swing.*;
 
 import static java.lang.Math.max;
@@ -17,7 +19,7 @@ public abstract class AbstractListPanel extends JPanel implements ListPanel {
     }
 
     @Override
-    public String[] getCurrentItem() {
+    public FontFile getCurrentItem() {
         return getItem(getCurrentItemNum());
     }
 

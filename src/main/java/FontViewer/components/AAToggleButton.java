@@ -1,25 +1,21 @@
 package FontViewer.components;
 
+import FontViewer.FontFile;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class AAToggleButton extends JToggleButton {
-    String fname;
-    String floc;
+    private FontFile font;
 
-    public AAToggleButton(String s, String fname, String floc) {
-        super(s);
-        this.fname = fname;
-        this.floc = floc;
-        this.setToolTipText(fname + " (" + floc + ")");
+    public AAToggleButton(String text, FontFile font) {
+        super(text);
+        this.font = font;
+        this.setToolTipText(getFontFile().toString());
     }
 
-    public String getFName() {
-        return fname;
-    }
-
-    public String getFLoc() {
-        return floc;
+    public FontFile getFontFile() {
+        return font;
     }
 
     public void paintComponent(Graphics g) {

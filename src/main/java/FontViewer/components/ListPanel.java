@@ -1,15 +1,17 @@
 package FontViewer.components;
 
+import FontViewer.FontFile;
+
 public interface ListPanel {
     int getNumItems();
     
-    String[] getItem(int itemNumber);
-    
-    String[] getCurrentItem();
+    FontFile getItem(int itemNumber);
+
+    FontFile getCurrentItem();
     
     int getCurrentItemNum();
     
-    void selectItem(String name, String loc);
+    void selectItem(FontFile font);
     
     void selectNext();
     

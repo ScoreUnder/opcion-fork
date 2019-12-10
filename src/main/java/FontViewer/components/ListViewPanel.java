@@ -1,5 +1,7 @@
 package FontViewer.components;
 
+import FontViewer.FontFile;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -12,8 +14,6 @@ import static java.lang.Math.min;
 
 public class ListViewPanel extends JPanel {
     private static final int NOT_FOUND = -1;
-    private static final int COL_FONTNAME = 0;
-    private static final int COL_FONTLOC = 1;
 
     private int rows;
     private int columns;
@@ -109,26 +109,31 @@ public class ListViewPanel extends JPanel {
         // Draw buttons
         for (int i = position; i < last; i++) {
             // Font item
-            String[] font = view.getItem(i);
+            FontFile font = view.getItem(i);
 
             // Assign font to variable, or create font if working with files
-            String fontLoc = font[COL_FONTLOC];
-            String fontName = font[COL_FONTNAME];
-            Font f = getFontFromSpec(fontLoc, fontName);
+            Font f = getFontFromSpec(font);
 
             AAToggleButton tb;
             if (f == null) {
-                tb = new AAToggleButton("Font could not be loaded.", "Font could not be loaded.", "N/A");
+                tb = new AAToggleButton("Font could not be loaded.", font);
             } else {
                 // Set up toggle buttons
-                tb = new AAToggleButton(sampleText, fontName, fontLoc);
+                tb = new AAToggleButton(sampleText, font);
                 tb.setBackground(Color.WHITE);
                 tb.setFont(f.deriveFont(Font.PLAIN, (float) fsize));
 
-                if (!(view instanceof FavouriteFontsPanel)) {
+                if (view instanceof FavouriteFontsPanel) {
+                    /* When in fav tab */
+                    // When a button is selected remove the font favs
+                    tb.addActionListener(evt -> {
+                        AAToggleButton source = (AAToggleButton) evt.getSource();
+                        ffp.removeFromFav(source.getFontFile());
+                    });
+                } else {
                     /* When in non-fav tab */
                     // Toggle button if this font has been selected before
-                    if (ffp.getItemNumber(fontName, fontLoc) != NOT_FOUND) {
+                    if (ffp.getItemNumber(font) != NOT_FOUND) {
                         tb.setSelected(true);
                     }
 
@@ -136,21 +141,13 @@ public class ListViewPanel extends JPanel {
                     // When a button is unselected remove the font from favs
                     tb.addActionListener(evt -> {
                         AAToggleButton source = (AAToggleButton) evt.getSource();
-                        String fName = source.getFName();
-                        String fLoc = source.getFLoc();
-                        view.selectItem(fName, fLoc);
+                        FontFile fontFileSelected = source.getFontFile();
+                        view.selectItem(fontFileSelected);
                         if (source.isSelected()) {
-                            ffp.addToFav(fName, fLoc);
+                            ffp.addToFav(fontFileSelected);
                         } else {
-                            ffp.removeFromFav(fName, fLoc);
+                            ffp.removeFromFav(fontFileSelected);
                         }
-                    });
-                } else {
-                    /* When in fav tab */
-                    // When a button is selected remove the font favs
-                    tb.addActionListener(evt -> {
-                        AAToggleButton source = (AAToggleButton) evt.getSource();
-                        ffp.removeFromFav(source.getFName(), source.getFLoc());
                     });
                 }
             }
@@ -161,13 +158,13 @@ public class ListViewPanel extends JPanel {
         listPanel.setVisible(true);
     }
 
-    private Font getFontFromSpec(String fontLoc, String fontName) {
+    private Font getFontFromSpec(FontFile fontFile) {
         Font f;
-        if (fontLoc.equals("System Font")) {
-            f = new Font(fontName, Font.PLAIN, fsize);
+        if (fontFile.getLocation().equals("System Font")) {
+            f = new Font(fontFile.getName(), Font.PLAIN, fsize);
         } else {
             try {
-                f = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream(fontLoc + File.separator + fontName));
+                f = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream(fontFile.getLocation() + File.separator + fontFile.getName()));
             } catch (Exception e) {
                 f = null;
             }

@@ -1,4 +1,5 @@
 package FontViewer.components;
+import FontViewer.FontFile;
 import FontViewer.windows.*;
 
 import java.io.*;
@@ -14,10 +15,10 @@ public class SampleTextPanel extends JPanel {
     private final int UNDERLINE = 2;
     
     private Vector<Integer> fontSizes;
-    private String sampleText;
+    private String sampleText = ResourceBundle.getBundle("Opcion").getString("defaultSampleText");
     
-    private String fontName;
-    private int fontSize;
+    private String fontName = "Default";
+    private int fontSize = 20;
     
     private boolean[] fontProperties = {false, false, false};
     
@@ -25,13 +26,11 @@ public class SampleTextPanel extends JPanel {
     
     public SampleTextPanel(MainWindow mw, int[] sizes) {
         this.mw = mw;
-        sampleText = java.util.ResourceBundle.getBundle("Opcion").getString("defaultSampleText");
 
         initFontSizes(sizes);
         initComponents();
         
         // Set default settings
-        fontName = "Default";
         fontSizeComboBox.setSelectedItem(fontSizes.get(9));
     }
     
@@ -48,12 +47,13 @@ public class SampleTextPanel extends JPanel {
         previewTextPane.setText(sampleText);
     }
 
-    public void setCurrentFont(String name, String loc) {
-        fontName = name;
+    public void setCurrentFont(FontFile font) {
+        fontName = font.getName();
+        String fontLocation = font.getLocation();
 
-        if (!loc.equals("System Font")) {
+        if (!fontLocation.equals("System Font")) {
             try {
-                fontName = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream(loc + File.separator + fontName)).getName();
+                fontName = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream(fontLocation + File.separator + fontName)).getName();
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Error loading font.", "Error!", JOptionPane.ERROR_MESSAGE);
             }

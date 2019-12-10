@@ -1,5 +1,6 @@
 package FontViewer.windows;
 
+import FontViewer.FontFile;
 import FontViewer.components.*;
 import FontViewer.windows.dialogs.AboutDialog;
 import FontViewer.windows.dialogs.TextAreaFromFileDialog;
@@ -16,13 +17,12 @@ import java.io.IOException;
 public class MainWindow extends javax.swing.JFrame {
     // Constants
     private final int[] FONT_SIZES = {6, 8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 42, 48, 56, 72, 84};
-    private final String ADD = "Add to Favourites";
-    private final String REM = "Remove from Favourites";
+    private static final String ADD = "Add to Favourites";
+    private static final String REM = "Remove from Favourites";
 
     // Variables
     private ListPanel currentPanel;
-    private String fname;
-    private String floc;
+    private FontFile currentFont;
     private boolean typingLoc;
 
     // List view properties
@@ -46,32 +46,31 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     public void addToFav() {
-        addToFav(fname, floc);
+        addToFav(currentFont);
     }
 
     public void removeFromFav() {
-        removeFromFav(fname, floc);
+        removeFromFav(currentFont);
     }
 
-    public void addToFav(String name, String loc) {
-        if (!favouriteFontsPanel.addToFav(name, loc)) {
+    public void addToFav(FontFile font) {
+        if (!favouriteFontsPanel.addToFav(font)) {
             JOptionPane.showMessageDialog(this, "Font already in favourites.", "Error!", JOptionPane.ERROR_MESSAGE);
         } else {
             updateDisplay();
         }
     }
 
-    public void removeFromFav(String name, String loc) {
-        if (!favouriteFontsPanel.removeFromFav(name, loc)) {
+    public void removeFromFav(FontFile font) {
+        if (!favouriteFontsPanel.removeFromFav(font)) {
             JOptionPane.showMessageDialog(this, "Font not found in favourites.", "Error!", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public void setCurrentFont(String name, String loc, int position) {
-        fname = name;
-        floc = loc;
+    public void setCurrentFont(FontFile font, int position) {
+        currentFont = font;
         listViewPanel.setPosition(position);
-        sampleTextPanel.setCurrentFont(name, loc);
+        sampleTextPanel.setCurrentFont(font);
     }
 
     public void setFontSize(int s) {
@@ -102,8 +101,8 @@ public class MainWindow extends javax.swing.JFrame {
 
             // Write favourites
             for (int i = 0; i < fav.getNumItems(); i++) {
-                String[] s = fav.getItem(i);
-                bw.write(s[1] + File.separator + s[0]);
+                FontFile s = fav.getItem(i);
+                bw.write(s.getLocation() + File.separator + s.getName());
                 bw.newLine();
             }
             bw.close();
@@ -291,7 +290,7 @@ public class MainWindow extends javax.swing.JFrame {
                 if (currentPanel instanceof FavouriteFontsPanel) {
                     removeFromFav();
                 } else {
-                    if (!favouriteFontsPanel.addToFav(fname, floc)) {
+                    if (!favouriteFontsPanel.addToFav(currentFont)) {
                         removeFromFav();
                     } else {
                         updateDisplay();
@@ -316,9 +315,9 @@ public class MainWindow extends javax.swing.JFrame {
         listViewPanel.setView((JPanel) newPanel);
 
         // Update sampleTextPanel
-        String[] s = newPanel.getCurrentItem();
-        if (s[0] != null) {
-            setCurrentFont(s[0], s[1], Integer.parseInt(s[2]));
+        FontFile s = newPanel.getCurrentItem();
+        if (s != null) {
+            setCurrentFont(s, newPanel.getCurrentItemNum());
         }
 
         // Set fav button action

@@ -1,5 +1,6 @@
 package FontViewer.components;
 
+import FontViewer.FontFile;
 import FontViewer.windows.MainWindow;
 
 import javax.swing.*;
@@ -7,15 +8,11 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Arrays;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
 public class OtherFontsPanel extends AbstractListPanel {
     private File currentDirectory;
-    private String[] filenames = new String[0];
     private MainWindow mw;
     private JTextField locationTextField;
-    private javax.swing.JList<String> otherFontsList;
+    private JList<FontFile> otherFontsList;
     private JScrollPane otherFontsScrollPane;
 
     public OtherFontsPanel(MainWindow mw) {
@@ -24,61 +21,64 @@ public class OtherFontsPanel extends AbstractListPanel {
         initComponents();
     }
 
-    public String[] getItem(int itemNumber) {
-        if (itemNumber >= 0 && itemNumber < filenames.length) {
-            return new String[]{
-                    filenames[itemNumber],
-                    currentDirectory.toString(),
-                    String.valueOf(itemNumber)
-            };
+    public FontFile getItem(int itemNumber) {
+        ListModel<FontFile> model = otherFontsList.getModel();
+        if (itemNumber >= 0 && itemNumber < model.getSize()) {
+            return model.getElementAt(itemNumber);
         } else {
-            return new String[3];
+            return null;
         }
     }
 
     public int getNumItems() {
-        return filenames.length;
+        return otherFontsList.getModel().getSize();
     }
 
     public int getCurrentItemNum() {
         return otherFontsList.getSelectedIndex();
     }
 
+    private static boolean isFontFilename(String path) {
+        String pathUpper = path.toUpperCase();
+        return pathUpper.endsWith(".TTF") || pathUpper.endsWith(".OTF");
+    }
+
     private void updateDisplay() {
-        filenames = currentDirectory.list((dir, name) -> name.toUpperCase().endsWith(".TTF"));
+        String[] filenames = currentDirectory.list((dir, name) -> isFontFilename(name));
         assert filenames != null;
         Arrays.sort(filenames, String.CASE_INSENSITIVE_ORDER);
 
-        if (filenames.length == 0) {
-            String[] message = {"This folder does not contain any fonts."};
-            otherFontsList.setListData(message);
+        FontFile[] files = Arrays.stream(filenames).map(it -> new FontFile(it, currentDirectory.toString())).toArray(FontFile[]::new);
+        otherFontsList.setListData(files);
+
+        if (files.length == 0) {
             otherFontsList.setEnabled(false);
         } else {
-            otherFontsList.setListData(filenames);
             otherFontsList.setEnabled(true);
         }
 
         mw.updateDisplay();
     }
 
-    public void selectItem(String name, String loc) {
-        otherFontsList.setSelectedValue(name, true);
+    public void selectItem(FontFile font) {
+        otherFontsList.setSelectedValue(font, true);
         int p = otherFontsList.getSelectedIndex();
         if (p >= 0)
-            mw.setCurrentFont(filenames[p], currentDirectory.toString(), p);
+            mw.setCurrentFont(otherFontsList.getSelectedValue(), p);
     }
 
     protected void setCurrentItem(int itemPos, boolean updateUI) {
-        if (filenames.length != 0) {
+        ListModel<FontFile> model = otherFontsList.getModel();
+        if (model.getSize() != 0) {
             if (updateUI) {
                 otherFontsList.setSelectedIndex(itemPos);
-                int spos = itemPos * (otherFontsScrollPane.getVerticalScrollBar().getMaximum() / filenames.length);
+                int spos = itemPos * (otherFontsScrollPane.getVerticalScrollBar().getMaximum() / model.getSize());
                 spos -= (otherFontsScrollPane.getSize().height / 2);
                 otherFontsScrollPane.getVerticalScrollBar().setValue(spos);
             }
 
             if (itemPos >= 0)
-                mw.setCurrentFont(filenames[itemPos], currentDirectory.toString(), itemPos);
+                mw.setCurrentFont(model.getElementAt(itemPos), itemPos);
         }
     }
 
