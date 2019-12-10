@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class AAToggleButton extends JToggleButton {
-    private FontFile font;
+    private final FontFile font;
 
     public AAToggleButton(String text, FontFile font) {
         super(text);

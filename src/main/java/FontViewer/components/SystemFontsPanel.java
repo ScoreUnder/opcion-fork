@@ -8,7 +8,7 @@ import java.awt.*;
 import java.util.Arrays;
 
 public class SystemFontsPanel extends AbstractListPanel {
-    private MainWindow mw;
+    private final MainWindow mw;
     private static final String LOCATION = "System Font";
     private JList<FontFile> systemFontsList;
     private JScrollPane systemFontsScrollPane;

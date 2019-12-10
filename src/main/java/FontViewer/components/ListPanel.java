@@ -12,8 +12,4 @@ public interface ListPanel {
     int getCurrentItemNum();
     
     void selectItem(FontFile font);
-    
-    void selectNext();
-    
-    void selectPrev();
 }

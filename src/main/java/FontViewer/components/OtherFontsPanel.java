@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 public class OtherFontsPanel extends AbstractListPanel {
     private File currentDirectory;
-    private MainWindow mw;
+    private final MainWindow mw;
     private JTextField locationTextField;
     private JList<FontFile> otherFontsList;
     private JScrollPane otherFontsScrollPane;
@@ -87,19 +87,9 @@ public class OtherFontsPanel extends AbstractListPanel {
 
         locationTextField = new JTextField();
         locationTextField.setToolTipText("Enter the location where fonts you wish to view are stored here");
-        locationTextField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                mw.setTyping(true);
-            }
-
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                mw.setTyping(false);
-            }
-        });
         locationTextField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-                    mw.setTyping(false);
                     File f = new File(locationTextField.getText());
                     if (f.exists()) {
                         if (f.isDirectory()) {

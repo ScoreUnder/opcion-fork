@@ -8,6 +8,10 @@ import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -17,10 +21,10 @@ import static java.lang.Math.min;
 public class FavouriteFontsPanel extends AbstractListPanel {
     private static final int COL_FONTNAME = 0;
 
-    private MainWindow mw;
-    private FontTableModel tm;
-    private int sortCol;
-    private boolean sortAscend;
+    private final MainWindow mw;
+    private final FontTableModel tm;
+    private final int sortCol;
+    private final boolean sortAscend;
     private JTable favouritesTable;
 
     public FavouriteFontsPanel(MainWindow mw) {
@@ -103,12 +107,32 @@ public class FavouriteFontsPanel extends AbstractListPanel {
             mw.setCurrentFont(getItem(p), p);
     }
 
-    public void sortAllRowsBy(int colIndex, boolean ascending) {
+    private void saveToFile(File f) {
+        try {
+            // Init stuff
+            BufferedWriter bw = new BufferedWriter(new FileWriter(f));
+
+            // Sort favourites
+            sortAllRowsBy(0, true);
+
+            // Write favourites
+            for (int i = 0; i < getNumItems(); i++) {
+                FontFile s = getItem(i);
+                bw.write(s.getLocation() + File.separator + s.getName());
+                bw.newLine();
+            }
+            bw.close();
+        } catch (IOException ioe) {
+            JOptionPane.showMessageDialog(this, "Cannot write to file.", "Error!", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void sortAllRowsBy(int colIndex, boolean ascending) {
         tm.sortBy(colIndex, ascending);
     }
 
     public static class CaseInsensitiveOrder implements Comparator<String> {
-        private boolean ascending;
+        private final boolean ascending;
 
         CaseInsensitiveOrder(boolean ascending) {
             this.ascending = ascending;
@@ -154,10 +178,30 @@ public class FavouriteFontsPanel extends AbstractListPanel {
         favouritesScrollPane.setBorder(null);
         favouritesScrollPane.setViewportView(favouritesTable);
         add(favouritesScrollPane, BorderLayout.CENTER);
+
+        JButton saveFaves = new JButton("Save to...");
+        saveFaves.setMnemonic('s');
+        saveFaves.addActionListener(evt -> {
+            if (getNumItems() <= 0) {
+                JOptionPane.showMessageDialog(this, "There are no favourite fonts to save.", "Error!", JOptionPane.ERROR_MESSAGE);
+            } else {
+                // Create new file chooser
+                JFileChooser fc = new JFileChooser(new File(""));
+                // Show save dialog; this method does not return until the dialog is closed
+                fc.showSaveDialog(this);
+                if (fc.getSelectedFile() != null) {
+                    File f = fc.getSelectedFile();
+                    if (!f.exists() || JOptionPane.showConfirmDialog(this, String.format("The file %s already exists, do you\nwant to overwrite?", f.getName()), "Warning!", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                        saveToFile(f);
+                    }
+                }
+            }
+        });
+        add(saveFaves, BorderLayout.SOUTH);
     }
 
     private static class FontTableModel extends AbstractTableModel {
-        private List<FontFile> fonts = new ArrayList<>();
+        private final List<FontFile> fonts = new ArrayList<>();
 
         @Override
         public int getRowCount() {
@@ -214,8 +258,8 @@ public class FavouriteFontsPanel extends AbstractListPanel {
         }
 
         private static class ColumnComparatorAdaptor implements Comparator<FontFile> {
-            private int columnIndex;
-            private Comparator<String> columnComparator;
+            private final int columnIndex;
+            private final Comparator<String> columnComparator;
 
             ColumnComparatorAdaptor(int columnIndex, Comparator<String> columnComparator) {
                 this.columnIndex = columnIndex;

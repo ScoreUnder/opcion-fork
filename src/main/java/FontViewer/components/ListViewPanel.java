@@ -14,13 +14,13 @@ import static java.lang.Math.min;
 
 public class ListViewPanel extends JPanel {
     private int rows;
-    private int columns;
+    private final int columns;
     private int position;
     private int fsize;
 
     private String sampleText;
     private ListPanel view;
-    private FavouriteFontsPanel ffp;
+    private final FavouriteFontsPanel ffp;
     private AAToggleButton selectedButton;
 
     public ListViewPanel(JPanel ffp, int rows, int columns) {
@@ -171,7 +171,7 @@ public class ListViewPanel extends JPanel {
         return f;
     }
 
-    public void nextPage() {
+    private void nextPage() {
         // Change position
         if ((position + rows) < view.getNumItems()) {
             position += rows;
@@ -179,7 +179,7 @@ public class ListViewPanel extends JPanel {
         }
     }
 
-    public void prevPage() {
+    private void prevPage() {
         // Change position
         if ((position - rows) >= 0) {
             position -= rows;

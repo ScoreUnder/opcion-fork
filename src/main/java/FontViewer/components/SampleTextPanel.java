@@ -21,9 +21,9 @@ public class SampleTextPanel extends JPanel {
     private String fontName = "Default";
     private int fontSize = 20;
     
-    private boolean[] fontProperties = {false, false, false};
+    private final boolean[] fontProperties = {false, false, false};
     
-    private MainWindow mw;
+    private final MainWindow mw;
     
     public SampleTextPanel(MainWindow mw, int[] sizes) {
         this.mw = mw;

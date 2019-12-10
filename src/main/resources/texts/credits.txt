@@ -1,6 +1,0 @@
-Current Maintainer:
-    Score_Under
-
-Original Author:
-    Paul Chiu
-    http://www.paulchiu.net
