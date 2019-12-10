@@ -32,7 +32,7 @@ public class ListViewPanel extends JPanel {
 
         position = 0;
         fsize = 20;
-        sampleText = java.util.ResourceBundle.getBundle("FontViewer.resources.Opcion").getString("defaultSampleText");
+        sampleText = java.util.ResourceBundle.getBundle("Opcion").getString("defaultSampleText");
 
         initComponents();
         listScrollPane.getVerticalScrollBar().setUnitIncrement(100);

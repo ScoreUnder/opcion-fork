@@ -10,8 +10,8 @@ import javax.swing.border.TitledBorder;
 
 public class AboutDialog extends javax.swing.JDialog {
     private static final String HOMEPAGE = "http://opcion.sourceforge.net";
-    private Icon logo = new ImageIcon(this.getClass().getClassLoader().getResource("FontViewer/resources/icons/Logo.gif"));
-    private String title = "Opcion Font Viewer " + ResourceBundle.getBundle("FontViewer.resources.Opcion").getString("version");
+    private Icon logo = new ImageIcon(this.getClass().getClassLoader().getResource("icons/Logo.png"));
+    private String title = "Opcion Font Viewer " + ResourceBundle.getBundle("Opcion").getString("version");
 
     public AboutDialog(JFrame parent) {
         super(parent, "About", Dialog.DEFAULT_MODALITY_TYPE);

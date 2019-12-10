@@ -32,7 +32,7 @@
                             <mainClass>FontViewer.Opcion</mainClass>
                         </manifest>
                         <manifestEntries>
-                            <SplashScreen-Image>FontViewer/resources/icons/Logo.gif</SplashScreen-Image>
+                            <SplashScreen-Image>icons/Logo.png</SplashScreen-Image>
                         </manifestEntries>
                     </archive>
                 </configuration>

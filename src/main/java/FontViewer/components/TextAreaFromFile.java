@@ -26,7 +26,7 @@ public class TextAreaFromFile extends JTextArea {
     }
 
     private void setContent() throws IOException {
-        String pathInJar = "FontViewer/resources/texts/" + filename;
+        String pathInJar = "texts/" + filename;
         URL resource = this.getClass().getClassLoader().getResource(pathInJar);
         if (resource == null) {
             setText(String.format("Could not find JAR resource %s", pathInJar));

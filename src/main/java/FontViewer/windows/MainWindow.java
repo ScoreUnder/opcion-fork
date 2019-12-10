@@ -124,7 +124,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         setTitle("Opcion Font Viewer");
         setFont(new java.awt.Font("Dialog", Font.PLAIN, 10));
-        setIconImage(new ImageIcon(this.getClass().getClassLoader().getResource("FontViewer/resources/icons/IconSmall.png")).getImage());
+        setIconImage(new ImageIcon(this.getClass().getClassLoader().getResource("icons/IconSmall.png")).getImage());
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 System.exit(0);

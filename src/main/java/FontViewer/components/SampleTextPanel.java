@@ -25,7 +25,7 @@ public class SampleTextPanel extends JPanel {
     
     public SampleTextPanel(MainWindow mw, int[] sizes) {
         this.mw = mw;
-        sampleText = java.util.ResourceBundle.getBundle("FontViewer.resources.Opcion").getString("defaultSampleText");
+        sampleText = java.util.ResourceBundle.getBundle("Opcion").getString("defaultSampleText");
 
         initFontSizes(sizes);
         initComponents();
