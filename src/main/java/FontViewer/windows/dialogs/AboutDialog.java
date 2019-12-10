@@ -26,7 +26,9 @@ package FontViewer.windows.dialogs;
 import FontViewer.components.*;
 import FontViewer.resources.*;
 
+import java.awt.*;
 import java.io.*;
+import java.net.URI;
 import java.util.*;
 import javax.swing.*;
 
@@ -167,7 +169,13 @@ public class AboutDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void homepageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_homepageButtonActionPerformed
-        com.xlreader.shared.io.S_ToBrowserDefault.s_displayURL(homepage);
+        if (Desktop.isDesktopSupported()) {
+            try {
+                Desktop.getDesktop().browse(URI.create(homepage));
+            } catch (IOException e) {
+                e.printStackTrace();  // TODO: bad error handler for a GUI user
+            }
+        }
     }//GEN-LAST:event_homepageButtonActionPerformed
     
     /** Exit the Application */

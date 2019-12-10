@@ -48,8 +48,7 @@ public class ListViewPanel extends javax.swing.JPanel {
     private AAToggleButton tmpSelectedButton;
     
     /** Creates new form listViewPanel */
-    public ListViewPanel(MainWindow mw,  JPanel ffp, int rows, int columns) {
-        this.mw = mw;
+    public ListViewPanel(JPanel ffp, int rows, int columns) {
         this.ffp = (FavouriteFontsPanel)ffp;
         this.rows = rows;
         this.columns = columns;

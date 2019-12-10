@@ -23,21 +23,24 @@
  * Created on 29 January 2004, 17:52
  */
 package FontViewer.windows.dialogs;
-import FontViewer.components.*;
 
-import java.io.*;
-import java.util.*;
-import java.awt.*;
+import FontViewer.components.AAToggleButton;
+import com.jgoodies.looks.BorderStyle;
+import com.jgoodies.looks.HeaderStyle;
+import com.jgoodies.looks.Options;
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+
 import javax.swing.*;
-import java.lang.ref.*;
-
-import com.jgoodies.plaf.*;
-import com.jgoodies.plaf.plastic.*;
+import java.awt.*;
+import java.io.*;
+import java.lang.ref.WeakReference;
+import java.util.Collections;
+import java.util.Vector;
 
 public class ListView extends javax.swing.JDialog {
     private final int SYSTEM = 0;
     private final int FILE = 1;
-    
+
     private int rows;
     private int columns;
     private int fontSize;
@@ -47,7 +50,7 @@ public class ListView extends javax.swing.JDialog {
     private Vector selectedFonts;
     private Object[] list;
     JFrame parent;
-    
+
     /** Creates new form ListView */
     public ListView(JFrame parent, int rows, int columns, Object[] o) {
         // Initialize global variables
@@ -66,7 +69,7 @@ public class ListView extends javax.swing.JDialog {
         // Add speical JGoodies properties
         menuBar.putClientProperty(Options.HEADER_STYLE_KEY, HeaderStyle.BOTH);
         menuBar.putClientProperty(PlasticLookAndFeel.BORDER_STYLE_KEY, BorderStyle.SEPARATOR);
-        
+
         // Draw fonts
         drawFonts();
         // Update GUI
@@ -74,11 +77,11 @@ public class ListView extends javax.swing.JDialog {
         fontsPerPageTextField.setText(""+rows);
         navInfoLabel.setText("Font " + (fontNum+1) + "~" + drawToNum + " of " + list.length);
         pack();
-        
+
         // Hide navigation menu (was only put in place for shortcut key purposes)
         hiddenMenu.setVisible(false);
         hiddenMenu.setEnabled(false);
-        
+
         // Center window
         this.setLocation((GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().width - this.getSize().width)/2,
                          (GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().height - this.getSize().height)/2);
@@ -90,10 +93,10 @@ public class ListView extends javax.swing.JDialog {
         AAToggleButton tb;
         WeakReference wrf = null;
         WeakReference wrb = null;
-        
+
         listPanel.removeAll();
         listPanel.repaint();
-        
+
         for (int i=fontNum; i<drawToNum; i++) {
             // Assign font to variable, or create font if working with files
             if (list[i] instanceof String) {
@@ -112,7 +115,7 @@ public class ListView extends javax.swing.JDialog {
 
             if (f != null) {
                 // Set up toggle buttons
-                tb = new AAToggleButton(sampleText);
+                tb = new AAToggleButton(sampleText, "", "");  // TODO: fudged empty string values
                 wrb = new WeakReference(tb);
                 ((AAToggleButton)wrb.get()).setBackground(Color.WHITE);
                 ((AAToggleButton)wrb.get()).setFont(f.deriveFont(Font.PLAIN, (float)fontSize));
@@ -121,12 +124,12 @@ public class ListView extends javax.swing.JDialog {
                 } else {
                     ((AAToggleButton)wrb.get()).setToolTipText(((Font)wrf.get()).getName());
                 }
-                
+
                 // Toggle button if this font has been selected before
                 if (selectedFonts.contains(((AAToggleButton)wrb.get()).getToolTipText())) {
                     ((AAToggleButton)wrb.get()).setSelected(true);
                 }
-                
+
                 // When a button is selected add the selected font to a vector
                 // When a button is unselected remove the font from the vector
                 ((AAToggleButton)wrb.get()).addActionListener(new java.awt.event.ActionListener() {
@@ -143,42 +146,42 @@ public class ListView extends javax.swing.JDialog {
                     }
                 });
             } else {
-                tb = new AAToggleButton("Font could not be loaded.");
+                tb = new AAToggleButton("Font could not be loaded.", "", "");  // TODO: Fudged empty string values
             }
-            
+
             listPanel.add(((AAToggleButton)wrb.get()));
         }
     }
-    
+
     private void updateFontSize() {
         fontSizeTextField.setText(""+fontSize);
         drawFonts();
     }
-    
+
     private void updateRows() {
         fontsPerPageTextField.setText(""+rows);
         drawFonts();
     }
-    
+
     private void updateNavInfo() {
         if ((fontNum + rows) < list.length) {
             drawToNum = fontNum + rows;
         } else {
             drawToNum = list.length;
         }
-        
+
         navInfoLabel.setText("Font " + (fontNum+1) + "~" + drawToNum + " of " + list.length);
         navInfoLabel.setToolTipText(navInfoLabel.getText());
         drawFonts();
     }
-    
+
     private void showNextPage() {
         if ((fontNum + rows) < list.length) {
             fontNum += rows;
             updateNavInfo();
         }
     }
-    
+
     private void showPrevPage() {
         if (fontNum != 0) {
             if ((fontNum - rows) >= 0) {
@@ -189,19 +192,19 @@ public class ListView extends javax.swing.JDialog {
             updateNavInfo();
         }
     }
-    
+
     public void pack() {
         // Get windows bounds
         GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
         Rectangle bounds = env.getMaximumWindowBounds();
-        
+
         // Do normal pack
         super.pack();
-        
+
         int w = this.getWidth();
         int h = this.getHeight();
         boolean changed = false;
-        
+
         // Check if need to resize
         if (w > bounds.width) {
             w = bounds.width;
@@ -213,12 +216,12 @@ public class ListView extends javax.swing.JDialog {
             changed = true;
             this.setLocation((int)this.getLocation().getX(), 0);
         }
-        
+
         if (changed) {
             // Change size
             this.setSize(w, h);
        }
-       
+
        // Check if need to move so window visible
        Point p = this.getLocation();
        int px = p.x;
@@ -239,7 +242,7 @@ public class ListView extends javax.swing.JDialog {
            this.setLocation(px, py);
        }
     }
-    
+
     private void saveFavToFile(File f) {
         if (selectedFonts.size() == 0) {
             new JOptionPane().showMessageDialog(this, "There are no favourite fonts to save.", "Error!", JOptionPane.ERROR_MESSAGE);
@@ -257,17 +260,17 @@ public class ListView extends javax.swing.JDialog {
             }
         }
     }
-    
+
     private StringBuffer getSortedFavs() {
         Collections.sort(selectedFonts);
         StringBuffer favs = new StringBuffer(selectedFonts.size() * 15);
         for (int i=0; i<selectedFonts.size(); i++) {
             favs.append(selectedFonts.get(i) + "\n");
         }
-        
+
         return favs;
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -515,11 +518,11 @@ public class ListView extends javax.swing.JDialog {
     private void prevMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prevMenuItemActionPerformed
         showPrevPage();
     }//GEN-LAST:event_prevMenuItemActionPerformed
-            
+
     private void viewFavsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewFavsMenuItemActionPerformed
         new TextAreaDialog(parent, "Favourite Fonts", getSortedFavs().toString()).show();
     }//GEN-LAST:event_viewFavsMenuItemActionPerformed
-    
+
     private void saveFavsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveFavsMenuItemActionPerformed
         // Create new file chooser
         JFileChooser fc = new JFileChooser(new File(""));
@@ -537,7 +540,7 @@ public class ListView extends javax.swing.JDialog {
             }
         }
     }//GEN-LAST:event_saveFavsMenuItemActionPerformed
-    
+
     private void changeSampleTextMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeSampleTextMenuItemActionPerformed
         String t = new JOptionPane().showInputDialog(this, "Set sample text as:", "Change Sample Text", JOptionPane.QUESTION_MESSAGE);
         if (t != null) {
@@ -546,7 +549,7 @@ public class ListView extends javax.swing.JDialog {
             pack();
         }
     }//GEN-LAST:event_changeSampleTextMenuItemActionPerformed
-    
+
     private void fontSizeTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fontSizeTextFieldKeyPressed
         if (evt.getKeyCode() == evt.VK_ENTER) {
             try {
@@ -564,7 +567,7 @@ public class ListView extends javax.swing.JDialog {
             }
         }
     }//GEN-LAST:event_fontSizeTextFieldKeyPressed
-    
+
     private void fontsPerPageTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fontsPerPageTextFieldKeyPressed
         if (evt.getKeyCode() == evt.VK_ENTER) {
             try {
@@ -586,20 +589,20 @@ public class ListView extends javax.swing.JDialog {
             }
         }
     }//GEN-LAST:event_fontsPerPageTextFieldKeyPressed
-    
+
     private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
         showNextPage();
     }//GEN-LAST:event_nextButtonActionPerformed
-    
+
     private void prevButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prevButtonActionPerformed
         showPrevPage();
     }//GEN-LAST:event_prevButtonActionPerformed
-    
+
     /** Exit the Application */
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
         this.dispose();
     }//GEN-LAST:event_exitForm
-      
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem changeSampleTextMenuItem;
     private javax.swing.JMenuItem closeViewMenuItem;

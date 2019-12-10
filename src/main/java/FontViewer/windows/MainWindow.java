@@ -23,21 +23,24 @@
  * Created on 28 January 2004, 12:03
  */
 package FontViewer.windows;
+
 import FontViewer.components.*;
-import FontViewer.resources.*;
-import FontViewer.windows.dialogs.*;
+import FontViewer.resources.MyImageIcon;
+import FontViewer.windows.dialogs.AboutDialog;
+import FontViewer.windows.dialogs.TextAreaFromFileDialog;
+import com.jgoodies.looks.BorderStyle;
+import com.jgoodies.looks.HeaderStyle;
+import com.jgoodies.looks.Options;
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
+import com.jgoodies.looks.plastic.theme.SkyBlue;
 
-import java.awt.*;
-import java.io.*;
-import java.util.*;
 import javax.swing.*;
-import javax.swing.text.*;
-import javax.swing.table.*;
-import java.lang.ref.*;
-
-import com.jgoodies.plaf.*;
-import com.jgoodies.plaf.plastic.*;
-import com.jgoodies.plaf.plastic.theme.*;
+import java.awt.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class MainWindow extends javax.swing.JFrame {
     // Debug constants
@@ -66,7 +69,7 @@ public class MainWindow extends javax.swing.JFrame {
         try {
             // Set Look and Feel
             PlasticXPLookAndFeel laf = new PlasticXPLookAndFeel();
-            laf.setMyCurrentTheme(new SkyBlue());
+            PlasticXPLookAndFeel.setCurrentTheme(new SkyBlue());
             UIManager.setLookAndFeel(laf);
             initComponents();
             
@@ -179,7 +182,7 @@ public class MainWindow extends javax.swing.JFrame {
         otherFontsPanel = new OtherFontsPanel(this);
         favouriteFontsPanel = new FavouriteFontsPanel(this);
         sampleTextPanel = new SampleTextPanel(this, FONT_SIZES);
-        listViewPanel = new ListViewPanel(this, favouriteFontsPanel, rows, columns);
+        listViewPanel = new ListViewPanel(favouriteFontsPanel, rows, columns);
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         savFavsMenuItem = new javax.swing.JMenuItem();
