@@ -106,54 +106,53 @@ public class ListViewPanel extends JPanel {
 
         // Draw buttons
         for (int i = position; i < last; i++) {
-            // Font item
-            FontFile font = view.getItem(i);
-
-            // Assign font to variable, or create font if working with files
-            Font f = getFontFromSpec(font);
-
-            AAToggleButton tb;
-            if (f == null) {
-                tb = new AAToggleButton("Font could not be loaded.", font);
-            } else {
-                // Set up toggle buttons
-                tb = new AAToggleButton(sampleText, font);
-                tb.setBackground(Color.WHITE);
-                tb.setFont(f.deriveFont(Font.PLAIN, (float) fsize));
-
-                if (view instanceof FavouriteFontsPanel) {
-                    /* When in fav tab */
-                    // When a button is selected remove the font favs
-                    tb.addActionListener(evt -> {
-                        AAToggleButton source = (AAToggleButton) evt.getSource();
-                        ffp.removeFromFav(source.getFontFile());
-                    });
-                } else {
-                    /* When in non-fav tab */
-                    // Toggle button if this font has been selected before
-                    if (ffp.getItemIndex(font) != -1) {
-                        tb.setSelected(true);
-                    }
-
-                    // When a button is selected add the selected font to favs
-                    // When a button is unselected remove the font from favs
-                    tb.addActionListener(evt -> {
-                        AAToggleButton source = (AAToggleButton) evt.getSource();
-                        FontFile fontFileSelected = source.getFontFile();
-                        view.selectItem(fontFileSelected);
-                        if (source.isSelected()) {
-                            ffp.addToFav(fontFileSelected);
-                        } else {
-                            ffp.removeFromFav(fontFileSelected);
-                        }
-                    });
-                }
-            }
-
-            listPanel.add(tb);
+            listPanel.add(createFontButton(view.getItem(i)));
         }
 
         listPanel.setVisible(true);
+    }
+
+    private AAToggleButton createFontButton(FontFile font) {
+        // Load font with AWT if possible
+        Font f = getFontFromSpec(font);
+
+        AAToggleButton tb;
+        if (f == null) {
+            tb = new AAToggleButton("Font could not be loaded.", font);
+        } else {
+            tb = new AAToggleButton(sampleText, font);
+            tb.setBackground(Color.WHITE);
+            tb.setFont(f.deriveFont(Font.PLAIN, (float) fsize));
+
+            if (view instanceof FavouriteFontsPanel) {
+                /* When in fav tab */
+                // When a button is selected remove the font from favs
+                tb.addActionListener(evt -> {
+                    AAToggleButton source = (AAToggleButton) evt.getSource();
+                    ffp.removeFromFav(source.getFontFile());
+                });
+            } else {
+                /* When in non-fav tab */
+                // Toggle button if this font has been selected before
+                if (ffp.getItemIndex(font) != -1) {
+                    tb.setSelected(true);
+                }
+
+                // When a button is selected add the selected font to favs
+                // When a button is unselected remove the font from favs
+                tb.addActionListener(evt -> {
+                    AAToggleButton source = (AAToggleButton) evt.getSource();
+                    FontFile fontFileSelected = source.getFontFile();
+                    view.selectItem(fontFileSelected);
+                    if (source.isSelected()) {
+                        ffp.addToFav(fontFileSelected);
+                    } else {
+                        ffp.removeFromFav(fontFileSelected);
+                    }
+                });
+            }
+        }
+        return tb;
     }
 
     private Font getFontFromSpec(FontFile fontFile) {
