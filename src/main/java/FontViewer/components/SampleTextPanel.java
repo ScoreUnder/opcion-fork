@@ -7,6 +7,7 @@ import java.awt.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.*;
 
 public class SampleTextPanel extends JPanel {
@@ -15,7 +16,7 @@ public class SampleTextPanel extends JPanel {
     private final int UNDERLINE = 2;
     
     private Vector<Integer> fontSizes;
-    private String sampleText = ResourceBundle.getBundle("Opcion").getString("defaultSampleText");
+    private static final String SAMPLE_TEXT = ResourceBundle.getBundle("Opcion").getString("defaultSampleText");
     
     private String fontName = "Default";
     private int fontSize = 20;
@@ -41,10 +42,9 @@ public class SampleTextPanel extends JPanel {
         }
         fontSizes = vector;
     }
-    
-    public void setSampleText(String s) {
-        sampleText = s;
-        previewTextPane.setText(sampleText);
+
+    public void addDocumentListener(DocumentListener listener) {
+        previewTextPane.getDocument().addDocumentListener(listener);
     }
 
     public void setCurrentFont(FontFile font) {
@@ -95,8 +95,7 @@ public class SampleTextPanel extends JPanel {
         JScrollPane previewTextScrollPane = new JScrollPane();
         previewTextScrollPane.setBorder(null);
         previewTextPane.setBorder(null);
-        previewTextPane.setEditable(false);
-        previewTextPane.setText(sampleText);
+        previewTextPane.setText(SAMPLE_TEXT);
         previewTextScrollPane.setViewportView(previewTextPane);
 
         add(previewTextScrollPane, BorderLayout.CENTER);

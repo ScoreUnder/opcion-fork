@@ -6,6 +6,10 @@ import FontViewer.windows.dialogs.AboutDialog;
 import FontViewer.windows.dialogs.TextAreaFromFileDialog;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -136,6 +140,28 @@ public class MainWindow extends javax.swing.JFrame {
         tabbedPane.addTab("Favourite Fonts", favouriteFontsPanel);
         tabbedPane.addChangeListener(evt -> changeCurrentPanel((ListPanel) tabbedPane.getSelectedComponent()));
 
+        sampleTextPanel.addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent documentEvent) {
+                changedUpdate(documentEvent);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent documentEvent) {
+                changedUpdate(documentEvent);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent documentEvent) {
+                Document doc = documentEvent.getDocument();
+                try {
+                    listViewPanel.setSampleText(doc.getText(0, doc.getLength()));
+                } catch (BadLocationException ignored) {
+                }
+            }
+        });
+
+
         JSplitPane quickViewSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tabbedPane, sampleTextPanel);
         quickViewSplitPane.setBorder(null);
         quickViewSplitPane.setDividerSize(5);
@@ -171,16 +197,6 @@ public class MainWindow extends javax.swing.JFrame {
         });
 
         fileMenu.add(savFavsMenuItem);
-
-        JMenuItem setSampleTextMenuItem = new JMenuItem("Set Sample Text", 't');
-        setSampleTextMenuItem.addActionListener(evt -> {
-            String t = JOptionPane.showInputDialog(this, "Set sample text as:", "Change Sample Text", JOptionPane.QUESTION_MESSAGE);
-            if (t != null) {
-                sampleTextPanel.setSampleText(t);
-                listViewPanel.setSampleText(t);
-            }
-        });
-        fileMenu.add(setSampleTextMenuItem);
 
         fileMenu.add(new JSeparator());
 
