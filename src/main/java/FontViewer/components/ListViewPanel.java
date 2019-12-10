@@ -13,8 +13,6 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public class ListViewPanel extends JPanel {
-    private static final int NOT_FOUND = -1;
-
     private int rows;
     private int columns;
     private int position;
@@ -133,7 +131,7 @@ public class ListViewPanel extends JPanel {
                 } else {
                     /* When in non-fav tab */
                     // Toggle button if this font has been selected before
-                    if (ffp.getItemNumber(font) != NOT_FOUND) {
+                    if (ffp.getItemIndex(font) != -1) {
                         tb.setSelected(true);
                     }
 

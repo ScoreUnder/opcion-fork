@@ -60,17 +60,11 @@ public class OtherFontsPanel extends AbstractListPanel {
         mw.updateDisplay();
     }
 
-    public void selectItem(FontFile font) {
-        otherFontsList.setSelectedValue(font, true);
-        int p = otherFontsList.getSelectedIndex();
-        if (p >= 0)
-            mw.setCurrentFont(otherFontsList.getSelectedValue(), p);
-    }
-
-    protected void setCurrentItem(int itemPos, boolean updateUI) {
+    protected void selectItem(int itemPos) {
         ListModel<FontFile> model = otherFontsList.getModel();
         if (model.getSize() != 0) {
-            if (updateUI) {
+            int selected = getCurrentItemNum();
+            if (itemPos != selected) {
                 otherFontsList.setSelectedIndex(itemPos);
                 int spos = itemPos * (otherFontsScrollPane.getVerticalScrollBar().getMaximum() / model.getSize());
                 spos -= (otherFontsScrollPane.getSize().height / 2);
@@ -147,12 +141,12 @@ public class OtherFontsPanel extends AbstractListPanel {
         otherFontsList = new JList<>();
         otherFontsList.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                setCurrentItem(otherFontsList.getSelectedIndex(), false);
+                selectItem(otherFontsList.getSelectedIndex());
             }
         });
         otherFontsList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                setCurrentItem(otherFontsList.getSelectedIndex(), false);
+                selectItem(otherFontsList.getSelectedIndex());
             }
         });
 

@@ -15,7 +15,6 @@ import java.util.List;
 import static java.lang.Math.min;
 
 public class FavouriteFontsPanel extends AbstractListPanel {
-    private static final int NOT_FOUND = -1;
     private static final int COL_FONTNAME = 0;
 
     private MainWindow mw;
@@ -36,7 +35,7 @@ public class FavouriteFontsPanel extends AbstractListPanel {
 
     public boolean addToFav(FontFile font) {
         // If font not already in favs, add to favs
-        if (getItemNumber(font) == NOT_FOUND) {
+        if (getItemIndex(font) == -1) {
             tm.addRow(font);
             return true;
         } else {
@@ -46,33 +45,22 @@ public class FavouriteFontsPanel extends AbstractListPanel {
 
     public boolean removeFromFav(FontFile font) {
         boolean removed = false;
-        int p = getItemNumber(font);
+        int p = getItemIndex(font);
 
         // Remove item
-        if (p != NOT_FOUND) {
+        if (p != -1) {
             tm.removeRow(p);
             removed = true;
         }
 
         // Select next/prev item
         p = min(getNumItems() - 1, p);
-        setCurrentItem(p, true);
+        selectItem(p);
 
         // Update display
         mw.updateDisplay();
 
         return removed;
-    }
-
-    public int getItemNumber(FontFile font) {
-        // Check selected font is already in Favourites
-        for (int i = 0; i < tm.getRowCount(); i++) {
-            if (tm.getRow(i).equals(font)) {
-                return i;
-            }
-        }
-
-        return NOT_FOUND;
     }
 
     public FontFile getItem(int itemNumber) {
@@ -96,7 +84,7 @@ public class FavouriteFontsPanel extends AbstractListPanel {
             sortAllRowsBy(sortCol, sortAscend);
 
             // Select selected item
-            favouritesTable.changeSelection(getItemNumber(s), 0, false, false);
+            favouritesTable.changeSelection(getItemIndex(s), 0, false, false);
         }
 
         return s;
@@ -106,16 +94,13 @@ public class FavouriteFontsPanel extends AbstractListPanel {
         return favouritesTable.getSelectedRow();
     }
 
-    protected void setCurrentItem(int p, boolean updateUI) {
-        if (updateUI)
+    protected void selectItem(int p) {
+        int currItem = getCurrentItemNum();
+        if (p != currItem)
             favouritesTable.changeSelection(p, 0, false, false);
 
         if (p >= 0)
-            mw.setCurrentFont(getCurrentItem(), getCurrentItemNum());
-    }
-
-    public void selectItem(FontFile font) {
-        setCurrentItem(getItemNumber(font), false);
+            mw.setCurrentFont(getItem(p), p);
     }
 
     public void sortAllRowsBy(int colIndex, boolean ascending) {
@@ -155,12 +140,12 @@ public class FavouriteFontsPanel extends AbstractListPanel {
         favouritesTable.setDoubleBuffered(true);
         favouritesTable.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                setCurrentItem(favouritesTable.getSelectedRow(), false);
+                selectItem(favouritesTable.getSelectedRow());
             }
         });
         favouritesTable.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
-                setCurrentItem(favouritesTable.getSelectedRow(), false);
+                selectItem(favouritesTable.getSelectedRow());
             }
         });
         favouritesTable.setAutoCreateColumnsFromModel(false);
