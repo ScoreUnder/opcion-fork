@@ -28,12 +28,6 @@ import FontViewer.components.*;
 import FontViewer.resources.MyImageIcon;
 import FontViewer.windows.dialogs.AboutDialog;
 import FontViewer.windows.dialogs.TextAreaFromFileDialog;
-import com.jgoodies.looks.BorderStyle;
-import com.jgoodies.looks.HeaderStyle;
-import com.jgoodies.looks.Options;
-import com.jgoodies.looks.plastic.PlasticLookAndFeel;
-import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
-import com.jgoodies.looks.plastic.theme.SkyBlue;
 
 import javax.swing.*;
 import java.awt.*;
@@ -66,23 +60,18 @@ public class MainWindow extends javax.swing.JFrame {
     
     /** Creates new form mainWindow */
     public MainWindow() {
+        // Set Look and Feel
         try {
-            // Set Look and Feel
-            PlasticXPLookAndFeel laf = new PlasticXPLookAndFeel();
-            PlasticXPLookAndFeel.setCurrentTheme(new SkyBlue());
-            UIManager.setLookAndFeel(laf);
-            initComponents();
-            
-            // Add speical JGoodies properties
-            tabbedPane.putClientProperty(Options.NO_CONTENT_BORDER_KEY, Boolean.TRUE);
-            menuBar.putClientProperty(Options.HEADER_STYLE_KEY, HeaderStyle.BOTH);
-            menuBar.putClientProperty(PlasticLookAndFeel.BORDER_STYLE_KEY, BorderStyle.SEPARATOR);
-            menuBar.requestFocus();
-        } catch (Exception e) {
-            new JOptionPane().showMessageDialog(this, "Cannot load JGoodies look and feel.", "Error!", JOptionPane.ERROR_MESSAGE);
-            initComponents();
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+            // Can't load native L&F. Not the end of the world.
+            e.printStackTrace();
         }
-        
+
+        initComponents();
+
+        menuBar.requestFocus();
+
         // Flag for whether user is typing in location field
         typingLoc = false;
         
@@ -95,10 +84,6 @@ public class MainWindow extends javax.swing.JFrame {
         
         // Draw ListView
         ((ListViewPanel)listViewPanel).setView(systemFontsPanel);
-        
-        // Center window
-        this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - this.getSize().width)/2,
-        (Toolkit.getDefaultToolkit().getScreenSize().height - this.getSize().height)/2);
     }
     
     public void addToFav() {
@@ -230,7 +215,6 @@ public class MainWindow extends javax.swing.JFrame {
         quickViewSplitPane.setDividerSize(5);
         quickViewSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         quickViewSplitPane.setResizeWeight(0.5);
-        tabbedPane.setPreferredSize(new java.awt.Dimension(320, 240));
         tabbedPane.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tabbedPaneMouseClicked(evt);
@@ -245,12 +229,10 @@ public class MainWindow extends javax.swing.JFrame {
 
         quickViewSplitPane.setLeftComponent(tabbedPane);
 
-        sampleTextPanel.setPreferredSize(new java.awt.Dimension(320, 240));
         quickViewSplitPane.setRightComponent(sampleTextPanel);
 
         mainSplitPane.setLeftComponent(quickViewSplitPane);
 
-        listViewPanel.setPreferredSize(new java.awt.Dimension(320, 480));
         mainSplitPane.setRightComponent(listViewPanel);
 
         getContentPane().add(mainSplitPane, java.awt.BorderLayout.CENTER);
@@ -414,11 +396,7 @@ public class MainWindow extends javax.swing.JFrame {
     private void addToFavHelpMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addToFavHelpMenuItemActionPerformed
         TextAreaFromFileDialog taffd = new TextAreaFromFileDialog(this, "Help - Add Font to Favourites", "addfavHelp.txt");
         taffd.setWrap(true);
-        
-        // Set window size
-        int x = 350; int y = 180;
-        taffd.setBounds((java.awt.Toolkit.getDefaultToolkit().getScreenSize().width-x)/2, (java.awt.Toolkit.getDefaultToolkit().getScreenSize().height-y)/2, x, y);
-        taffd.show();
+        taffd.setVisible(true);
     }//GEN-LAST:event_addToFavHelpMenuItemActionPerformed
 
     private void savFavsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_savFavsMenuItemActionPerformed
@@ -446,11 +424,7 @@ public class MainWindow extends javax.swing.JFrame {
     private void shortcutsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_shortcutsMenuItemActionPerformed
         TextAreaFromFileDialog taffd = new TextAreaFromFileDialog(this, "Help - Shortcut Keys", "shortcutsHelp.txt");
         taffd.setWrap(false);
-        
-        // Set window size
-        int x = 350; int y = 300;
-        taffd.setBounds((java.awt.Toolkit.getDefaultToolkit().getScreenSize().width-x)/2, (java.awt.Toolkit.getDefaultToolkit().getScreenSize().height-y)/2, x, y);
-        taffd.show();
+        taffd.setVisible(true);
     }//GEN-LAST:event_shortcutsMenuItemActionPerformed
 
     private void addOrRemMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addOrRemMenuItemActionPerformed
@@ -549,9 +523,7 @@ public class MainWindow extends javax.swing.JFrame {
     private void installFontsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_installFontsMenuItemActionPerformed
         TextAreaFromFileDialog taffd = new TextAreaFromFileDialog(this, "Help - Installing Fonts", "installHelp.txt");
         taffd.setWrap(false);
-        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        taffd.setBounds((screenSize.width-480)/2, (screenSize.height-295)/2, 480, 295);
-        taffd.show();
+        taffd.setVisible(true);
     }//GEN-LAST:event_installFontsMenuItemActionPerformed
     
     private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed

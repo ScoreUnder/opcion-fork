@@ -189,7 +189,6 @@ public class OtherFontsPanel extends javax.swing.JPanel implements ListPanel {
         locationPanel.add(locationLabel, java.awt.BorderLayout.WEST);
 
         locationTextField.setToolTipText("Enter the location where fonts you wish to view are stored here");
-        locationTextField.setPreferredSize(new java.awt.Dimension(100, 20));
         locationTextField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 locationTextFieldFocusGained(evt);
@@ -208,7 +207,6 @@ public class OtherFontsPanel extends javax.swing.JPanel implements ListPanel {
 
         browseButton.setText("Browse");
         browseButton.setToolTipText("Browse for font directory");
-        browseButton.setPreferredSize(new java.awt.Dimension(81, 20));
         browseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 browseButtonActionPerformed(evt);

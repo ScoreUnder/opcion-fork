@@ -25,10 +25,6 @@
 package FontViewer.windows.dialogs;
 
 import FontViewer.components.AAToggleButton;
-import com.jgoodies.looks.BorderStyle;
-import com.jgoodies.looks.HeaderStyle;
-import com.jgoodies.looks.Options;
-import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -66,10 +62,6 @@ public class ListView extends javax.swing.JDialog {
         selectedFonts = new Vector();
         initComponents();
 
-        // Add speical JGoodies properties
-        menuBar.putClientProperty(Options.HEADER_STYLE_KEY, HeaderStyle.BOTH);
-        menuBar.putClientProperty(PlasticLookAndFeel.BORDER_STYLE_KEY, BorderStyle.SEPARATOR);
-
         // Draw fonts
         drawFonts();
         // Update GUI
@@ -81,10 +73,6 @@ public class ListView extends javax.swing.JDialog {
         // Hide navigation menu (was only put in place for shortcut key purposes)
         hiddenMenu.setVisible(false);
         hiddenMenu.setEnabled(false);
-
-        // Center window
-        this.setLocation((GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().width - this.getSize().width)/2,
-                         (GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().height - this.getSize().height)/2);
     }
 
     private void drawFonts() {
@@ -314,7 +302,6 @@ public class ListView extends javax.swing.JDialog {
 
         optionsPanel.setLayout(new java.awt.GridLayout(1, 0));
 
-        optionsPanel.setPreferredSize(new java.awt.Dimension(10, 20));
         fontsPerPageLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         fontsPerPageLabel.setText("Fonts/Page");
         fontsPerPageLabel.setToolTipText("Fonts to show per page");
@@ -344,7 +331,6 @@ public class ListView extends javax.swing.JDialog {
         getContentPane().add(optionsPanel, java.awt.BorderLayout.NORTH);
 
         listScrollPane.setMinimumSize(new java.awt.Dimension(300, 22));
-        listScrollPane.setPreferredSize(null);
         listPanel.setLayout(new java.awt.GridLayout(1, 1));
 
         listPanel.setMinimumSize(new java.awt.Dimension(300, 0));
@@ -355,10 +341,8 @@ public class ListView extends javax.swing.JDialog {
 
         navigationPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 0));
 
-        navigationPanel.setPreferredSize(new java.awt.Dimension(250, 20));
         prevButton.setText("<");
         prevButton.setToolTipText("Previous page");
-        prevButton.setPreferredSize(new java.awt.Dimension(41, 20));
         prevButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 prevButtonActionPerformed(evt);
@@ -369,12 +353,10 @@ public class ListView extends javax.swing.JDialog {
 
         navInfoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         navInfoLabel.setText("Font 0~0 of 0");
-        navInfoLabel.setPreferredSize(new java.awt.Dimension(150, 20));
         navigationPanel.add(navInfoLabel);
 
         nextButton.setText(">");
         nextButton.setToolTipText("Next page");
-        nextButton.setPreferredSize(new java.awt.Dimension(41, 20));
         nextButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nextButtonActionPerformed(evt);

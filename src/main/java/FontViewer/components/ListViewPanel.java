@@ -253,7 +253,6 @@ public class ListViewPanel extends javax.swing.JPanel {
         setBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(1, 1, 1, 1)));
         optionsPanel.setLayout(new java.awt.GridLayout(1, 0));
 
-        optionsPanel.setPreferredSize(new java.awt.Dimension(10, 20));
         fontsPerPageLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         fontsPerPageLabel.setText("Fonts/Page");
         fontsPerPageLabel.setToolTipText("Fonts to show per page");
@@ -282,11 +281,9 @@ public class ListViewPanel extends javax.swing.JPanel {
 
         navigationPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 0));
 
-        navigationPanel.setPreferredSize(new java.awt.Dimension(250, 26));
         prevButton.setText("<");
         prevButton.setToolTipText("Previous page");
         prevButton.setFocusPainted(false);
-        prevButton.setPreferredSize(new java.awt.Dimension(41, 20));
         prevButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 prevButtonActionPerformed(evt);
@@ -297,13 +294,11 @@ public class ListViewPanel extends javax.swing.JPanel {
 
         navInfoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         navInfoLabel.setText("Font 0~0 of 0");
-        navInfoLabel.setPreferredSize(new java.awt.Dimension(150, 20));
         navigationPanel.add(navInfoLabel);
 
         nextButton.setText(">");
         nextButton.setToolTipText("Next page");
         nextButton.setFocusPainted(false);
-        nextButton.setPreferredSize(new java.awt.Dimension(41, 20));
         nextButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nextButtonActionPerformed(evt);

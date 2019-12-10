@@ -69,7 +69,6 @@ public class AboutDialog extends javax.swing.JDialog {
         creditsTextArea = new TextAreaFromFile("credits.txt");
         licensesPanel = new javax.swing.JPanel();
         jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
         copyrightLabel = new javax.swing.JLabel();
 
         setTitle("About");
@@ -128,15 +127,6 @@ public class AboutDialog extends javax.swing.JDialog {
 
         licensesPanel.add(jButton2);
 
-        jButton3.setText("JGoodies License (BSD)");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
-
-        licensesPanel.add(jButton3);
-
         contentPanel.add(licensesPanel, java.awt.BorderLayout.SOUTH);
 
         getContentPane().add(contentPanel, java.awt.BorderLayout.CENTER);
@@ -146,26 +136,18 @@ public class AboutDialog extends javax.swing.JDialog {
         copyrightLabel.setText("Copyright (c) 2004 Paul Chiu");
         getContentPane().add(copyrightLabel, java.awt.BorderLayout.SOUTH);
 
-        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-470)/2, (screenSize.height-295)/2, 470, 295);
+        pack();
     }//GEN-END:initComponents
 
     private void changeLogButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeLogButtonActionPerformed
         TextAreaFromFileDialog taffd = new TextAreaFromFileDialog((JFrame)this.getParent(), "Change Log", "changeLog.txt");
-        taffd.setBounds((java.awt.Toolkit.getDefaultToolkit().getScreenSize().width-300)/2, (java.awt.Toolkit.getDefaultToolkit().getScreenSize().height-400)/2, 300, 400);
-        taffd.show();
+        taffd.setVisible(true);
     }//GEN-LAST:event_changeLogButtonActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        TextAreaFromFileDialog taffd = new TextAreaFromFileDialog((JFrame)this.getParent(), "JGoodies License", "jgoodiesLicense.txt");
-        taffd.setWrap(false);
-        taffd.show();
-    }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         TextAreaFromFileDialog taffd = new TextAreaFromFileDialog((JFrame)this.getParent(), "Opcion License", "opcionLicense.txt");
         taffd.setWrap(false);
-        taffd.show();
+        taffd.setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void homepageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_homepageButtonActionPerformed
@@ -193,7 +175,6 @@ public class AboutDialog extends javax.swing.JDialog {
     private javax.swing.JButton homepageButton;
     private javax.swing.JPanel homepagePanel;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JPanel licensesPanel;
     private javax.swing.JLabel logoLabel;
     // End of variables declaration//GEN-END:variables

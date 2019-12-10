@@ -74,6 +74,8 @@ public class TextAreaFromFileDialog extends javax.swing.JDialog {
         jScrollPane1.setBorder(null);
         jTextArea1.setBackground((java.awt.Color) javax.swing.UIManager.getDefaults().get("windowBorder"));
         jTextArea1.setLineWrap(true);
+        jTextArea1.setColumns(80);
+        jTextArea1.setRows(20);
         jScrollPane1.setViewportView(jTextArea1);
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -91,8 +93,7 @@ public class TextAreaFromFileDialog extends javax.swing.JDialog {
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
 
-        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-480)/2, (screenSize.height-500)/2, 480, 500);
+        pack();
     }//GEN-END:initComponents
 
     private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized

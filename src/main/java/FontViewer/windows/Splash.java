@@ -37,12 +37,6 @@ public class Splash extends javax.swing.JWindow {
         splashImage = new ImageIcon(cl.getResource("FontViewer/resources/icons/" + iconName));
 
         initComponents();
-        
-        // Center
-        int w = 400;
-        int h = 150;
-        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-w)/2, (screenSize.height-h)/2, w, h);        
     }
     
     /** This method is called from within the constructor to

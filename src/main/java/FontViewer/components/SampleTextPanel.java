@@ -152,13 +152,10 @@ public class SampleTextPanel extends javax.swing.JPanel {
 
         topPanel.setLayout(new java.awt.GridLayout(2, 0, 0, 2));
 
-        topPanel.setPreferredSize(new java.awt.Dimension(10, 42));
         optionsPanel.setLayout(new java.awt.BorderLayout(2, 2));
 
-        optionsPanel.setPreferredSize(new java.awt.Dimension(10, 24));
         fontPropertiesPanel.setLayout(new java.awt.GridLayout(1, 3, 2, 0));
 
-        fontPropertiesPanel.setPreferredSize(new java.awt.Dimension(64, 20));
         boldButton.setText("B");
         boldButton.setToolTipText("Bold");
         boldButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -174,7 +171,6 @@ public class SampleTextPanel extends javax.swing.JPanel {
         italicsButton.setText("I");
         italicsButton.setToolTipText("Italic");
         italicsButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        italicsButton.setPreferredSize(new java.awt.Dimension(20, 20));
         italicsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 italicsButtonActionPerformed(evt);
@@ -186,7 +182,6 @@ public class SampleTextPanel extends javax.swing.JPanel {
         underlineButton.setText("U");
         underlineButton.setToolTipText("Underline");
         underlineButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        underlineButton.setPreferredSize(new java.awt.Dimension(20, 20));
         underlineButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 underlineButtonActionPerformed(evt);
@@ -199,7 +194,6 @@ public class SampleTextPanel extends javax.swing.JPanel {
 
         addFavouritesButton.setText("Add to Favourites");
         addFavouritesButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        addFavouritesButton.setPreferredSize(new java.awt.Dimension(130, 20));
         addFavouritesButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addFavouritesButtonActionPerformed(evt);
@@ -212,16 +206,14 @@ public class SampleTextPanel extends javax.swing.JPanel {
 
         fontInfoPanel.setLayout(new java.awt.BorderLayout(2, 2));
 
-        fontSizePanel.setLayout(new java.awt.GridLayout(1, 2));
+        fontSizePanel.setLayout(new java.awt.FlowLayout(FlowLayout.LEFT));
 
-        fontSizePanel.setPreferredSize(new java.awt.Dimension(112, 24));
         fontSizeLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         fontSizeLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         fontSizeLabel.setText("Font Size: ");
         fontSizePanel.add(fontSizeLabel);
 
         fontSizeComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
-        fontSizeComboBox.setPreferredSize(new java.awt.Dimension(31, 24));
         fontSizeComboBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 fontSizeComboBoxItemStateChanged(evt);

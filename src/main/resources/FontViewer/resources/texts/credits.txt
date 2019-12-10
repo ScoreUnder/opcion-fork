@@ -1,7 +1,6 @@
-Author:
+Current Maintainer:
+    Score_Under
+
+Original Author:
 	Paul Chiu
 	http://www.paulchiu.net
-
-GUI Look & Feel:
-	JGoodies
-	http://www.jgoodies.com

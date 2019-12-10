@@ -14,14 +14,6 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.jgoodies</groupId>
-            <artifactId>looks</artifactId>
-            <version>2.2.2</version>
-        </dependency>
-    </dependencies>
-
     <build>
         <resources>
             <resource>
@@ -38,6 +30,9 @@
                         <manifest>
                             <mainClass>FontViewer.Opcion</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <SplashScreen-Image>FontViewer/resources/icons/Logo.gif</SplashScreen-Image>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
@@ -55,19 +50,6 @@
                 <configuration>
                     <mainClass>FontViewer.Opcion</mainClass>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

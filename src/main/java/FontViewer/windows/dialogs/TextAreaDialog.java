@@ -78,9 +78,6 @@ public class TextAreaDialog extends javax.swing.JDialog {
         jPanel1.add(jButton1);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
-
-        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-400)/2, (screenSize.height-300)/2, 400, 300);
     }//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
