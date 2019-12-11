@@ -1,7 +1,7 @@
 opcion-fork
 ===========
 
-Fork of Opcion[1] to build and run on modern JDKs. Includes various code and UI
+Fork of [Opcion][1] to build and run on modern JDKs. Includes various code and UI
 tweaks to my own taste.
 
 Opcion is a cross-platform font viewer. I don't want to install Qt4 and old
