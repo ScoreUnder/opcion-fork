@@ -16,6 +16,7 @@ import static java.lang.Math.min;
 public class ListViewPanel extends JPanel {
     private int rows;
     private final int columns;
+    private int pageStart;
     private int position;
     private int fsize;
 
@@ -29,7 +30,7 @@ public class ListViewPanel extends JPanel {
         this.rows = rows;
         this.columns = columns;
 
-        position = 0;
+        pageStart = 0;
         fsize = 20;
         sampleText = java.util.ResourceBundle.getBundle("Opcion").getString("defaultSampleText");
 
@@ -52,25 +53,26 @@ public class ListViewPanel extends JPanel {
         if (panel.getNumItems() == 0) {
             noDisplay();
         } else {
-            position = max(0, panel.getCurrentItemNum());
+            pageStart = max(0, panel.getCurrentItemNum());
             updateDisplay();
         }
     }
 
-    public void setPosition(int p) {
-        if (p < position || p >= position + rows) {
-            position = p;
+    public void setPosition(int position) {
+        this.position = position;
+        if (position < pageStart || position >= pageStart + rows) {
+            pageStart = position / rows * rows;  // Scroll to whole pages only
             updateDisplay();
         }
 
         // Highlight selected font
         if (selectedButton != null)
             selectedButton.setBackground(Color.WHITE);
-        selectedButton = (AAToggleButton) listPanel.getComponent(p - position);
+        selectedButton = (AAToggleButton) listPanel.getComponent(position - pageStart);
         selectedButton.setBackground((java.awt.Color) javax.swing.UIManager.getDefaults().get("Table.selectionBackground"));
 
         // Scroll to selected font
-        ScrollTools.scrollVerticallyTo(listScrollPane, p - position, rows);
+        ScrollTools.scrollVerticallyTo(listScrollPane, position - pageStart, rows);
     }
 
     private void noDisplay() {
@@ -93,18 +95,13 @@ public class ListViewPanel extends JPanel {
 
         int items = view.getNumItems();
         // Set when to stop drawing
-        int last = min(position + rows, items);
-
-        // Draw everything if less items than rows
-        if (view.getNumItems() <= rows) {
-            position = 0;
-        }
+        int last = min(pageStart + rows, items);
 
         // Update drawing status
-        navInfoLabel.setText(String.format("Font %d~%d of %d", position + 1, last, items));
+        navInfoLabel.setText(String.format("Font %d~%d of %d", pageStart + 1, last, items));
 
         // Draw buttons
-        for (int i = position; i < last; i++) {
+        for (int i = pageStart; i < last; i++) {
             listPanel.add(createFontButton(view.getItem(i)));
         }
 
@@ -172,19 +169,19 @@ public class ListViewPanel extends JPanel {
 
     private void nextPage() {
         // Change position
-        if ((position + rows) < view.getNumItems()) {
-            position += rows;
+        if ((pageStart + rows) < view.getNumItems()) {
+            pageStart += rows;
             updateDisplay();
         }
     }
 
     private void prevPage() {
         // Change position
-        if ((position - rows) >= 0) {
-            position -= rows;
+        if ((pageStart - rows) >= 0) {
+            pageStart -= rows;
             updateDisplay();
-        } else if (((position - rows) < 0) && (position != 0)) {
-            position = 0;
+        } else if (((pageStart - rows) < 0) && (pageStart != 0)) {
+            pageStart = 0;
             updateDisplay();
         }
     }
@@ -213,6 +210,7 @@ public class ListViewPanel extends JPanel {
                     try {
                         rows = Integer.parseInt(fontsPerPageTextField.getText());
                         listPanel.setLayout(new GridLayout(rows, columns, 2, 0));
+                        pageStart = position / rows * rows;
                         updateDisplay();
                     } catch (NumberFormatException nfe) {
                         JOptionPane.showMessageDialog(ListViewPanel.this, "Not a valid number.", "Error!", JOptionPane.ERROR_MESSAGE);
