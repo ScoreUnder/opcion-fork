@@ -19,6 +19,7 @@ public class MainWindow extends javax.swing.JFrame {
     private static final String REM = "Remove from Favourites";
 
     private FontFile currentFont;
+    private ListPanel currentPanel;
 
     // List view properties
     private static final int ROWS = 10;
@@ -77,7 +78,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         for (var panel : Arrays.asList(systemFontsPanel, favouriteFontsPanel, otherFontsPanel)) {
             panel.addFontChangeListener(this::setCurrentFont);
-            panel.addFontListUpdateListener(listViewPanel::updateDisplay);
+            panel.addFontListUpdateListener(() -> { if (panel == currentPanel) listViewPanel.updateDisplay(); });
         }
 
         getContentPane().setLayout(new java.awt.BorderLayout(0, 5));
@@ -100,16 +101,19 @@ public class MainWindow extends javax.swing.JFrame {
         sampleTextPanel.addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent documentEvent) {
-                changedUpdate(documentEvent);
+                onTextChange(documentEvent);
             }
 
             @Override
             public void removeUpdate(DocumentEvent documentEvent) {
-                changedUpdate(documentEvent);
+                onTextChange(documentEvent);
             }
 
             @Override
             public void changedUpdate(DocumentEvent documentEvent) {
+            }
+
+            private void onTextChange(DocumentEvent documentEvent) {
                 Document doc = documentEvent.getDocument();
                 try {
                     listViewPanel.setSampleText(doc.getText(0, doc.getLength()));
@@ -135,6 +139,8 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     private void changeCurrentPanel(ListPanel newPanel) {
+        currentPanel = newPanel;
+
         // Update list
         listViewPanel.setView(newPanel);
 
