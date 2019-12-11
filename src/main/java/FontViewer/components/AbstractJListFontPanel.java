@@ -1,6 +1,7 @@
 package FontViewer.components;
 
 import FontViewer.FontFile;
+import FontViewer.util.ScrollTools;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,9 +41,7 @@ public class AbstractJListFontPanel extends AbstractListPanel {
             int selected = getCurrentItemNum();
             if (itemPos != selected) {
                 fontList.setSelectedIndex(itemPos);
-                int spos = itemPos * (fontScrollPane.getVerticalScrollBar().getMaximum() / model.getSize());
-                spos -= (fontScrollPane.getSize().height / 2);
-                fontScrollPane.getVerticalScrollBar().setValue(spos);
+                ScrollTools.scrollVerticallyTo(fontScrollPane, itemPos, model.getSize());
             }
         }
 

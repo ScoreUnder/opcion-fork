@@ -136,7 +136,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void changeCurrentPanel(ListPanel newPanel) {
         // Update list
-        listViewPanel.setView((JPanel) newPanel);
+        listViewPanel.setView(newPanel);
 
         // Update sampleTextPanel
         FontFile s = newPanel.getCurrentItem();

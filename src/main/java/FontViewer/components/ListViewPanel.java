@@ -1,6 +1,7 @@
 package FontViewer.components;
 
 import FontViewer.FontFile;
+import FontViewer.util.ScrollTools;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,18 +47,18 @@ public class ListViewPanel extends JPanel {
         updateDisplay();
     }
 
-    public void setView(JPanel p) {
-        view = (ListPanel) p;
-        if (view.getNumItems() == 0) {
+    public void setView(ListPanel panel) {
+        view = panel;
+        if (panel.getNumItems() == 0) {
             noDisplay();
         } else {
-            position = max(0, view.getCurrentItemNum());
+            position = max(0, panel.getCurrentItemNum());
             updateDisplay();
         }
     }
 
     public void setPosition(int p) {
-        if ((p < position) || ((position + rows) <= p)) {
+        if (p < position || p >= position + rows) {
             position = p;
             updateDisplay();
         }
@@ -69,9 +70,7 @@ public class ListViewPanel extends JPanel {
         selectedButton.setBackground((java.awt.Color) javax.swing.UIManager.getDefaults().get("Table.selectionBackground"));
 
         // Scroll to selected font
-        int spos = (p - position) * (listScrollPane.getVerticalScrollBar().getMaximum() / rows);
-        spos -= (listScrollPane.getSize().height / 2);
-        listScrollPane.getVerticalScrollBar().setValue(spos);
+        ScrollTools.scrollVerticallyTo(listScrollPane, p - position, rows);
     }
 
     private void noDisplay() {
