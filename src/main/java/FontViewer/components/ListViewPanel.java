@@ -187,7 +187,6 @@ public class ListViewPanel extends JPanel {
     }
 
     private void initComponents() {
-        fontsPerPageTextField = new JTextField();
         listScrollPane = new JScrollPane();
         listPanel = new JPanel();
         JPanel navigationPanel = new JPanel();
@@ -203,7 +202,7 @@ public class ListViewPanel extends JPanel {
         fontsPerPageLabel.setToolTipText("Fonts to show per page");
         optionsPanel.add(fontsPerPageLabel);
 
-        fontsPerPageTextField.setText(String.valueOf(rows));
+        var fontsPerPageTextField = new JTextField(String.valueOf(rows));
         fontsPerPageTextField.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent evt) {
                 if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -254,10 +253,8 @@ public class ListViewPanel extends JPanel {
         navigationPanel.add(nextButton);
 
         add(navigationPanel, BorderLayout.SOUTH);
-
     }
 
-    private JTextField fontsPerPageTextField;
     private JPanel listPanel;
     private JScrollPane listScrollPane;
     private JLabel navInfoLabel;
