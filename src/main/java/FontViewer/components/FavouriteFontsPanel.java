@@ -1,7 +1,6 @@
 package FontViewer.components;
 
 import FontViewer.FontFile;
-import FontViewer.windows.MainWindow;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -21,18 +20,16 @@ import static java.lang.Math.min;
 public class FavouriteFontsPanel extends AbstractListPanel {
     private static final int COL_FONTNAME = 0;
 
-    private final MainWindow mw;
     private final FontTableModel tm;
     private final int sortCol;
     private final boolean sortAscend;
     private JTable favouritesTable;
 
-    public FavouriteFontsPanel(MainWindow mw) {
+    public FavouriteFontsPanel() {
         tm = new FontTableModel();
         initComponents();
 
         // Init global variables
-        this.mw = mw;
         sortCol = COL_FONTNAME;
         sortAscend = true;
     }
@@ -62,7 +59,7 @@ public class FavouriteFontsPanel extends AbstractListPanel {
         selectItem(p);
 
         // Update display
-        mw.updateDisplay();
+        fireFontListUpdate();
 
         return removed;
     }
@@ -103,8 +100,7 @@ public class FavouriteFontsPanel extends AbstractListPanel {
         if (p != currItem)
             favouritesTable.changeSelection(p, 0, false, false);
 
-        if (p >= 0)
-            mw.setCurrentFont(getItem(p), p);
+        fireFontChange();
     }
 
     private void saveToFile(File f) {

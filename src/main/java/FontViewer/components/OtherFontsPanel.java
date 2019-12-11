@@ -1,18 +1,15 @@
 package FontViewer.components;
 
 import FontViewer.FontFile;
-import FontViewer.windows.MainWindow;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.Arrays;
 
 public class OtherFontsPanel extends AbstractJListFontPanel {
-    public OtherFontsPanel(MainWindow mw) {
-        super(mw);
-
+    public OtherFontsPanel() {
         initComponents();
     }
 
@@ -30,7 +27,7 @@ public class OtherFontsPanel extends AbstractJListFontPanel {
         fontList.setListData(files);
         fontList.setEnabled(files.length != 0);
 
-        mw.updateDisplay();
+        fireFontListUpdate();
     }
 
     private void initComponents() {

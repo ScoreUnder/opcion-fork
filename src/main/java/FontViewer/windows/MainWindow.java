@@ -9,6 +9,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 public class MainWindow extends javax.swing.JFrame {
@@ -42,7 +43,7 @@ public class MainWindow extends javax.swing.JFrame {
         if (!favouriteFontsPanel.addToFav(font)) {
             JOptionPane.showMessageDialog(this, "Font already in favourites.", "Error!", JOptionPane.ERROR_MESSAGE);
         } else {
-            updateDisplay();
+            listViewPanel.updateDisplay();
         }
     }
 
@@ -52,7 +53,10 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }
 
-    public void setCurrentFont(FontFile font, int position) {
+    private void setCurrentFont(FontFile font, int position) {
+        if (position < 0) return;  // If nothing is selected, don't set anything
+        assert font != null;
+
         currentFont = font;
         listViewPanel.setPosition(position);
         sampleTextPanel.setCurrentFont(font);
@@ -64,15 +68,17 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }
 
-    public void updateDisplay() {
-        listViewPanel.updateDisplay();
-    }
-
     private void initComponents() {
-        systemFontsPanel = new SystemFontsPanel(this);
-        favouriteFontsPanel = new FavouriteFontsPanel(this);
+        systemFontsPanel = new SystemFontsPanel();
+        favouriteFontsPanel = new FavouriteFontsPanel();
+        var otherFontsPanel = new OtherFontsPanel();
         sampleTextPanel = new SampleTextPanel(this, FONT_SIZES);
         listViewPanel = new ListViewPanel(favouriteFontsPanel, ROWS, COLUMNS);
+
+        for (var panel : Arrays.asList(systemFontsPanel, favouriteFontsPanel, otherFontsPanel)) {
+            panel.addFontChangeListener(this::setCurrentFont);
+            panel.addFontListUpdateListener(listViewPanel::updateDisplay);
+        }
 
         getContentPane().setLayout(new java.awt.BorderLayout(0, 5));
 
@@ -87,7 +93,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("System Fonts", systemFontsPanel);
-        tabbedPane.addTab("Other Fonts", new OtherFontsPanel(this));
+        tabbedPane.addTab("Other Fonts", otherFontsPanel);
         tabbedPane.addTab("Favourite Fonts", favouriteFontsPanel);
         tabbedPane.addChangeListener(evt -> changeCurrentPanel((ListPanel) tabbedPane.getSelectedComponent()));
 

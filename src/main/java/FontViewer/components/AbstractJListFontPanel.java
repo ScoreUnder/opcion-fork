@@ -1,7 +1,6 @@
 package FontViewer.components;
 
 import FontViewer.FontFile;
-import FontViewer.windows.MainWindow;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,11 +8,8 @@ import java.awt.*;
 public class AbstractJListFontPanel extends AbstractListPanel {
     protected final JList<FontFile> fontList = new JList<>();
     private final JScrollPane fontScrollPane = new JScrollPane();
-    protected final MainWindow mw;
 
-    protected AbstractJListFontPanel(MainWindow mw) {
-        this.mw = mw;
-
+    protected AbstractJListFontPanel() {
         setLayout(new BorderLayout());
         fontList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         fontList.addListSelectionListener(evt -> selectItem(fontList.getSelectedIndex()));
@@ -48,9 +44,8 @@ public class AbstractJListFontPanel extends AbstractListPanel {
                 spos -= (fontScrollPane.getSize().height / 2);
                 fontScrollPane.getVerticalScrollBar().setValue(spos);
             }
-
-            if (itemPos >= 0)
-                mw.setCurrentFont(model.getElementAt(itemPos), itemPos);
         }
+
+        fireFontChange();
     }
 }
