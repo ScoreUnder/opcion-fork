@@ -54,9 +54,13 @@ public class FavouriteFontsPanel extends AbstractListPanel {
             removed = true;
         }
 
-        // Select next/prev item
-        p = min(getNumItems() - 1, p);
-        selectItem(p);
+        if (isVisible()) { // ...hack?
+            // Select next/prev item
+            p = min(getNumItems() - 1, p);
+            selectItem(p);
+        } else {
+            selectItem(-1);
+        }
 
         // Update display
         fireFontListUpdate();
