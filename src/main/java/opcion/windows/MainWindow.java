@@ -1,7 +1,7 @@
-package FontViewer.windows;
+package opcion.windows;
 
-import FontViewer.FontFile;
-import FontViewer.components.*;
+import opcion.FontFile;
+import opcion.components.*;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;

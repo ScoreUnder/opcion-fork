@@ -1,6 +1,6 @@
-package FontViewer.components;
+package opcion.components;
 
-import FontViewer.FontFile;
+import opcion.FontFile;
 
 public interface ListPanel {
     int getNumItems();

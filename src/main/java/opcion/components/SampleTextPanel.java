@@ -1,6 +1,6 @@
-package FontViewer.components;
-import FontViewer.FontFile;
-import FontViewer.windows.*;
+package opcion.components;
+import opcion.FontFile;
+import opcion.windows.*;
 
 import java.io.*;
 import java.awt.*;

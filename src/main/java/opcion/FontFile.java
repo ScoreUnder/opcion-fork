@@ -1,4 +1,4 @@
-package FontViewer;
+package opcion;
 
 public class FontFile {
     private final String name;

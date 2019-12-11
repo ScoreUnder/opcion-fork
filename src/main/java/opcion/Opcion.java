@@ -1,6 +1,6 @@
-package FontViewer;
+package opcion;
 
-import FontViewer.windows.*;
+import opcion.windows.MainWindow;
 
 import javax.swing.*;
 

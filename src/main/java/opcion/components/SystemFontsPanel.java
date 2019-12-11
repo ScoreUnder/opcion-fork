@@ -1,6 +1,6 @@
-package FontViewer.components;
+package opcion.components;
 
-import FontViewer.FontFile;
+import opcion.FontFile;
 
 import java.awt.*;
 import java.util.Arrays;

@@ -1,7 +1,7 @@
-package FontViewer.components;
+package opcion.components;
 
-import FontViewer.FontFile;
-import FontViewer.util.ScrollTools;
+import opcion.FontFile;
+import opcion.util.ScrollTools;
 
 import javax.swing.*;
 import java.awt.*;

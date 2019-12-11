@@ -1,4 +1,4 @@
-package FontViewer.components;
+package opcion.components;
 
 import javax.swing.*;
 import java.awt.*;

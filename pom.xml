@@ -29,7 +29,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>FontViewer.Opcion</mainClass>
+                            <mainClass>opcion.Opcion</mainClass>
                         </manifest>
                         <manifestEntries>
                             <SplashScreen-Image>icons/Logo.png</SplashScreen-Image>
@@ -49,7 +49,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>FontViewer.Opcion</mainClass>
+                    <mainClass>opcion.Opcion</mainClass>
                 </configuration>
             </plugin>
         </plugins>
