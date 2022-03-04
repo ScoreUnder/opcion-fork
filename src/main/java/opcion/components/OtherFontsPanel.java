@@ -23,11 +23,7 @@ public class OtherFontsPanel extends AbstractJListFontPanel {
         assert filenames != null;
         Arrays.sort(filenames, String.CASE_INSENSITIVE_ORDER);
 
-        FontFile[] files = Arrays.stream(filenames).map(it -> new FontFile(it, directory.toString())).toArray(FontFile[]::new);
-        fontList.setListData(files);
-        fontList.setEnabled(files.length != 0);
-
-        fireFontListUpdate();
+        setFontList(Arrays.stream(filenames).map(it -> new FontFile(it, directory.toString())).toArray(FontFile[]::new));
     }
 
     private void initComponents() {

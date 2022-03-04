@@ -10,6 +10,6 @@ public class SystemFontsPanel extends AbstractJListFontPanel {
 
     public SystemFontsPanel() {
         String[] names = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-        fontList.setListData(Arrays.stream(names).map(it -> new FontFile(it, LOCATION)).toArray(FontFile[]::new));
+        setFontList(Arrays.stream(names).map(it -> new FontFile(it, LOCATION)).toArray(FontFile[]::new));
     }
 }
